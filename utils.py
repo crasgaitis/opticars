@@ -17,6 +17,7 @@ def gaze_data_callback(gaze_data):
   global_gaze_data = gaze_data
   
 def gaze_data(eyetracker, wait_time=5):
+    #records for wait_time number of seconds
   global global_gaze_data
 
   # print("Getting data...")
