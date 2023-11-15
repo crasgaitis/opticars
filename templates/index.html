@@ -20,11 +20,22 @@
         let rotation = 0;
         let xPosition = 0;
         let yPosition = 0;
+        let revolution = 0;
 
         const square = document.getElementById('square');
 
         function updateSquare() {
+            
             square.style.transform = `translate(${xPosition}px, ${yPosition}px) rotate(${rotation}deg)`;
+        }
+        function barrelRoll() {
+            for (let i = 0; i < 24; i++) {
+                setTimeout(() => {
+                    rotation += 15;
+                    revolution -= 15;
+                    updateSquare();
+                }, 100 * i);
+            }
         }
 
         document.addEventListener('keydown', (event) => {
@@ -47,6 +58,13 @@
                 case 'ArrowRight':
                     rotation += 15;
                     break;
+                case ' ':
+                    if (revolution <= 0) {
+                        revolution = 360;
+                        barrelRoll();
+                    }
+                    break;
+
             }
             updateSquare();
         });
