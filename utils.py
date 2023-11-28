@@ -39,6 +39,7 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
     
     for _ in range(intervals):
         data = gaze_data(tracker, time_step_sec)
+        print(data)
         dict_list.append(data)
     
     tot_dict = combine_dicts_with_labels(dict_list)
