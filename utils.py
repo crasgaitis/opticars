@@ -1,7 +1,6 @@
-import time 
+import time, math, ast
 import tobii_research as tr
 import pandas as pd
-import math
 
 
 def combine_dicts_with_labels(dict_list):
@@ -17,7 +16,7 @@ def gaze_data_callback(gaze_data):
   global_gaze_data = gaze_data
   
 def gaze_data(eyetracker, wait_time=5):
-    #records for wait_time number of seconds
+  # records for wait_time number of seconds
   global global_gaze_data
 
   # print("Getting data...")
@@ -54,4 +53,28 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
     else:
         return df, dict_list
     
-    
+def build_dataset_from_csv(file_path, label):
+    '''
+    Builds a dataframe from a csv file. Revives tuples from string format.
+    file_path: path to csv file
+    label: label for the data
+    add_on: if True, add to existing dataframe
+    df_orig: original dataframe to add to
+
+    returns: dataframe with data from csv file
+    '''
+
+    # all the columns that are tuples
+    # TODO: compute programmatically
+    tuples = ['left_gaze_point_on_display_area',
+    'left_gaze_point_in_user_coordinate_system',
+    'left_gaze_origin_in_user_coordinate_system',
+    'left_gaze_origin_in_trackbox_coordinate_system',
+    'right_gaze_point_on_display_area',
+    'right_gaze_point_in_user_coordinate_system',
+    'right_gaze_origin_in_user_coordinate_system',
+    'right_gaze_origin_in_trackbox_coordinate_system']
+
+    df = pd.read_csv(file_path, converters={key: ast.literal_eval for key in tuples})
+    df['type'] = label
+    return df
