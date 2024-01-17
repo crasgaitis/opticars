@@ -1,7 +1,7 @@
 # opticars
 Team: 
 
-Software: Catherine Rasgaitis, Yuna Kim, Ruslana Korolov, Evan Wu, Zohar Le, Sasha Batoukova, Graham Cobden
+Software: Catherine Rasgaitis, Yuna Kim, Ruslana Korolov, Evan Wu, Zohar Le, Sasha Batoukova, Graham Cobden, AnnMarie Vo, Lam Pham
 
 Hardware: Peyton Rapo, Joanna Zhou, Nick Garwood, Daniel Zheng, Lincoln Mansbach
 
