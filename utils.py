@@ -1,7 +1,7 @@
 import time, math, ast
 import tobii_research as tr
 import pandas as pd
-
+import os
 
 def combine_dicts_with_labels(dict_list):
     combined_dict = {}
@@ -28,26 +28,30 @@ def gaze_data(eyetracker, wait_time=5):
 
   return global_gaze_data
 
-def build_dataset(tracker, label, title=None, add_on = False, df_orig = pd.DataFrame(), 
-                  time_step_sec = 0.5, tot_time_min = 0.1):
+def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(), 
+                  time_step_sec = 0.1, tot_time_min = 0.1):
     
     global global_gaze_data
     
     intervals = math.ceil((tot_time_min * 60) / time_step_sec)
     dict_list = []
-    
+
     for _ in range(intervals):
         data = gaze_data(tracker, time_step_sec)
+        print(data)
         dict_list.append(data)
     
     tot_dict = combine_dicts_with_labels(dict_list)
     df = pd.DataFrame(tot_dict).T
     df['type'] = label
+        
+    if add_on:
+        df_new = pd.concat([df_orig, df])
+        df_new = df_new.reset_index(drop=True)
+        return df_new
     
-    if title != None:
-      os.makedirs(label, exist_ok=True)
-      dir = label + "/"
-      df.to_csv(dir + title + ".csv", index=False)
+    else:
+        return df, dict_list
     
 def build_dataset_from_csv(file_path, label):
     '''
