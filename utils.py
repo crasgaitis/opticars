@@ -79,3 +79,16 @@ def build_dataset_from_csv(file_path, label):
     df = pd.read_csv(file_path, converters={key: ast.literal_eval for key in tuples})
     df['type'] = label
     return df
+
+# calculatePower takes in 4 args (left and right eye coords) and returns left and right magnitude
+def calculatePower(left_x, left_y, right_x, right_y):
+    leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
+    rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
+
+    if abs(leftMagnitude) > 1.0:
+        leftMagnitude /= abs(leftMagnitude)
+
+    if abs(rightMagnitude) > 1.0:
+        rightMagnitude /= abs(rightMagnitude)
+        
+    return leftMagnitude, rightMagnitude
