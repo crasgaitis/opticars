@@ -7,6 +7,8 @@ Hardware: Peyton Rapo, Joanna Zhou, Nick Garwood, Daniel Zheng, Lincoln Mansbach
 
 TODOs:
 
+Note: Must be running Eye Manager for build function to work!
+
 Software:
 - build up UI
     - use Cat's template:
