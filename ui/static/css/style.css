@@ -3,11 +3,21 @@
 
     
 }
+
+
+
+.main {
+    width: auto;
+    height: auto;
+    background-color: blueviolet;
+}
+
 .flex-container {
     max-width: auto;
     justify-content: center;
     display: flex;
     flex-direction: row;
+    
     
 }
 .oval {
@@ -15,21 +25,52 @@
     margin-inline: 5px;
     margin-bottom: 10px;
     width: 400px;
-    height: 199px;
+    height: 150px;
+
     background: red;
     border-radius: 35%;
     opacity: .4;
 }
 
 #c2 {
-    height: 120px;
-    padding-bottom: 180px;
-    border-radius: 50%;
+
+    /* padding-bottom: 180px; */
     margin-bottom: 10px;
+
+
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    
+    
 }
 
 #o5 {
-    opacity: 0;
+    /* opacity: 0; */
+    background-color: white;
+    text-align: center;
 }
+
+#o8 {
+    background-color: blueviolet;
+    width: 600px;
+    text-align: center;
+}
+
+h1 {
+    color:black;
+    margin-top: 50px;
+    padding: 20px;
+}
+
+#o4, #o6 {
+    margin: 0;
+    width: 250px;
+}
+
+
+
+
+
 
 
