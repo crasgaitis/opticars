@@ -21,4 +21,4 @@ if __name__ == '__main__':
     threading.Thread(target=eye_tracking.update_eye_tracking_data).start()
 
     # start the Flask app
-    socketio.run(app, debug=True, port=5001)
+    socketio.run(app, debug=True, port=4999)

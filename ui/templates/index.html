@@ -22,6 +22,40 @@
         setInterval(function() {
             socket.emit('get_eye_tracking_data');
         }, 100);
+
     </script>
+    
+    <container class="main" id="main">
+        <container class="flex-container" id="c1">
+            <div class="oval" id="o1"></div>
+            <div class="oval" id="o2"></div>
+            <div class="oval" id="o3"></div>
+    
+    
+        </container>
+    
+        <container class="flex-container" id="c2">
+            
+            <div class="oval" id="o4"></div>
+            <!-- <h1 id="dz">dead zone</h1> -->
+    
+            <!-- <div class="oval" id="o5">
+                <h1>Dead Zone</h1>
+            </div> -->
+            <div class="oval" id="o6"></div>
+        </container>
+    
+        <container class="flex-container" id="c3">
+            <div class="oval" id="o7"></div>
+            <div class="oval" id="o8">
+                <!-- <h1>Rear View</h1> -->
+            </div>
+            <div class="oval" id="o9"></div>
+        </container>
+    </container>
+    
+
+
+    
 </body>
 </html>
