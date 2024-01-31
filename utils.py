@@ -2,7 +2,7 @@ import time
 import tobii_research as tr
 import pandas as pd
 import math
-
+import ast
 
 def combine_dicts_with_labels(dict_list):
     combined_dict = {}
