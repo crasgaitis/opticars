@@ -54,6 +54,30 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
     else:
         return df, dict_list
 
+    
+def safe_tuple_eval(s, default_value=None):
+    """
+    Safely evaluates a string to convert it to a tuple. Returns a default value if the string
+    is NaN or cannot be converted.
+
+    Args:
+    s: str, the string to be evaluated.
+    default_value: The default value to return if conversion fails or s is NaN. Defaults to None.
+
+    Returns:
+    The evaluated tuple or the default value.
+    """
+    if pd.isna(s):
+        # Return the default value if the value is NaN
+        return default_value
+    try:
+        # Attempt to convert string to tuple
+        return ast.literal_eval(s)
+    except (ValueError, SyntaxError):
+        # Return default value if conversion fails
+        return default_value
+
+
 def build_dataset_from_csv(file_path, label):
     '''
     Builds a dataframe from a csv file. Revives tuples from string format.
@@ -76,8 +100,16 @@ def build_dataset_from_csv(file_path, label):
     'right_gaze_origin_in_user_coordinate_system',
     'right_gaze_origin_in_trackbox_coordinate_system']
 
-    df = pd.read_csv(file_path, converters={key: ast.literal_eval for key in tuples})
+    #converters = {key: safe_tuple_eval for key in tuples}
+    converters = {key: lambda s: safe_tuple_eval(s, default_value=None) for key in tuples}
+    # converters = {key: lambda s: safe_tuple_eval(s, default_value=(0, 0)) for key in tuples}
+    
+    df = pd.read_csv(file_path, converters=converters)
+    #df = pd.read_csv(file_path, converters={key: ast.literal_eval for key in tuples})
     df['type'] = label
+    df['left_pupil_diameter'].fillna("None", inplace=True)
+    df['right_pupil_diameter'].fillna("None", inplace=True)
+    #df = df.applymap(lambda x: None if pd.isna(x) else x)
     return df
 
 # calculatePower takes in 4 args (left and right eye coords) and returns left and right magnitude
