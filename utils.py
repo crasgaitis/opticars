@@ -54,6 +54,15 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
     else:
         return df, dict_list
 
+def safe_tuple_eval(s):
+    try:
+        # Attempt to evaluate string as tuple
+        return ast.literal_eval(s) if pd.notna(s) else None
+        # You can replace None with a default value, e.g., (0, 0) if that's more suitable
+    except (ValueError, SyntaxError):
+        # In case of any error, return None or a default value
+        return None
+
 def build_dataset_from_csv(file_path, label):
     '''
     Builds a dataframe from a csv file. Revives tuples from string format.
@@ -76,7 +85,10 @@ def build_dataset_from_csv(file_path, label):
     'right_gaze_origin_in_user_coordinate_system',
     'right_gaze_origin_in_trackbox_coordinate_system']
 
-    df = pd.read_csv(file_path, converters={key: ast.literal_eval for key in tuples})
+    converters = {key: safe_tuple_eval for key in tuples}
+    
+    df = pd.read_csv(file_path, converters=converters)
+    #df = pd.read_csv(file_path, converters={key: ast.literal_eval for key in tuples})
     df['type'] = label
     return df
 
