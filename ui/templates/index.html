@@ -24,6 +24,13 @@
             socket.emit('get_eye_tracking_data');
         }, 100);
 
+        update(gaze_id(x, y)); // updates blob colors
+
+        function update(objectId) { // gets objectId from gaze_id() in utils.py
+            resetBackgroundColor();
+            updateBackgroundColorById(objectId)
+        }
+
         function updateBackgroundColorById(objectId, newColor) {
             // Get the element with the specified ID
             var element = document.getElementById(objectId);
@@ -36,6 +43,13 @@
                 console.error("Element with ID '" + objectId + "' not found.");
             }
         }
+
+
+        function resetBackgroundColor() {
+            var element = document.getElementsByClassName("oval");
+            element.style.backgroundColor = "red";
+        }  
+
 
     </script>
     
@@ -69,30 +83,28 @@
     </container>  
 
     <script>
-        document.getElementById("o1").onmouseover = function() {updateBackgroundColorById('o1', 'green')};
-        document.getElementById("o1").onmouseout = function() {updateBackgroundColorById('o1', 'red')};
 
-        document.getElementById("o2").onmouseover = function() {updateBackgroundColorById('o2', 'green')};
-        document.getElementById("o2").onmouseout = function() {updateBackgroundColorById('o2', 'red')};
+        // document.getElementById("o1").onmouseover = function() {updateBackgroundColorById('o1', 'green')};
+        // document.getElementById("o1").onmouseout = function() {updateBackgroundColorById('o1', 'red')};
 
-        document.getElementById("o3").onmouseover = function() {updateBackgroundColorById('o3', 'green')};
-        document.getElementById("o3").onmouseout = function() {updateBackgroundColorById('o3', 'red')};
+        // document.getElementById("o2").onmouseover = function() {updateBackgroundColorById('o2', 'green')};
+        // document.getElementById("o2").onmouseout = function() {updateBackgroundColorById('o2', 'red')};
 
-        document.getElementById("o4").onmouseover = function() {updateBackgroundColorById('o4', 'green')};
-        document.getElementById("o4").onmouseout = function() {updateBackgroundColorById('o4', 'red')};
+        // document.getElementById("o3").onmouseover = function() {updateBackgroundColorById('o3', 'green')};
+        // document.getElementById("o3").onmouseout = function() {updateBackgroundColorById('o3', 'red')};
 
-        document.getElementById("o6").onmouseover = function() {updateBackgroundColorById('o6', 'green')};
-        document.getElementById("o6").onmouseout = function() {updateBackgroundColorById('o6', 'red')};
+        // document.getElementById("o4").onmouseover = function() {updateBackgroundColorById('o4', 'green')};
+        // document.getElementById("o4").onmouseout = function() {updateBackgroundColorById('o4', 'red')};
 
-        document.getElementById("o7").onmouseover = function() {updateBackgroundColorById('o7', 'green')};
-        document.getElementById("o7").onmouseout = function() {updateBackgroundColorById('o7', 'red')};
+        // document.getElementById("o6").onmouseover = function() {updateBackgroundColorById('o6', 'green')};
+        // document.getElementById("o6").onmouseout = function() {updateBackgroundColorById('o6', 'red')};
 
-
-        document.getElementById("o9").onmouseover = function() {updateBackgroundColorById('o9', 'green')};
-        document.getElementById("o9").onmouseout = function() {updateBackgroundColorById('o9', 'red')};
+        // document.getElementById("o7").onmouseover = function() {updateBackgroundColorById('o7', 'green')};
+        // document.getElementById("o7").onmouseout = function() {updateBackgroundColorById('o7', 'red')};
 
 
-
+        // document.getElementById("o9").onmouseover = function() {updateBackgroundColorById('o9', 'green')};
+        // document.getElementById("o9").onmouseout = function() {updateBackgroundColorById('o9', 'red')};
 
     </script>
 

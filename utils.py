@@ -53,8 +53,31 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
     
     else:
         return df, dict_list
-
     
+# gaze id takes in an x and y coordinate and returns the id that should be highlighted
+def gaze_id(x, y):
+    element = "o"
+    if (x < -0.33 and y > 0.33):
+        element += "1"
+    elif (x > -0.33 and x < 0.33 and y > 0.33):
+        element += "2"
+    elif (x > 0.33 and y > 0.33):
+        element += "3"
+    elif (x < -0.33 and y > -0.33 and y < 0.33):
+        element += "4"
+    elif (x > -0.33 and x < 0.33 and y > -0.33 and y < 0.33):
+        element += "5"
+    elif (x > 0.33 and y > -0.33 and y < 0.33):
+        element += "6"
+    elif (x < -0.33 and y < -0.33):
+        element += "7"
+    elif (x > -0.33 and x < 0.33 and y < -0.33):
+        element += "8"
+    elif (x > 0.33 and y < -0.33):
+        element += "9"
+
+    return element
+     
 def safe_tuple_eval(s, default_value=None):
     """
     Safely evaluates a string to convert it to a tuple. Returns a default value if the string
@@ -124,3 +147,4 @@ def calculatePower(left_x, left_y, right_x, right_y):
         rightMagnitude /= abs(rightMagnitude)
         
     return leftMagnitude, rightMagnitude
+
