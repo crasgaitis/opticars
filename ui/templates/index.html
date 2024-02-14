@@ -22,13 +22,16 @@
         // request updates from the server
         setInterval(function() {
             socket.emit('get_eye_tracking_data');
+
+            var objectId = gaze_id(data); // objectId is the return from the gaze_id function
+            update(objectId);
         }, 100);
 
-        update(gaze_id(x, y)); // updates blob colors
+        
 
         function update(objectId) { // gets objectId from gaze_id() in utils.py
             resetBackgroundColor();
-            updateBackgroundColorById(objectId)
+            updateBackgroundColorById(objectId, 'green');
         }
 
         function updateBackgroundColorById(objectId, newColor) {
