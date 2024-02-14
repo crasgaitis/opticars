@@ -55,7 +55,23 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
         return df, dict_list
     
 # gaze id takes in an x and y coordinate and returns the id that should be highlighted
-def gaze_id(x, y):
+def gaze_id(dataframe):
+    # extract x and y coordinates from the specified column
+    left_x_values = [point[0] for point in dataframe['left_gaze_point_on_display_area']]
+    left_y_values = [point[1] for point in dataframe['left_gaze_point_on_display_area']]
+    right_x_values = [point[0] for point in dataframe['right_gaze_point_on_display_area']]
+    right_y_values = [point[1] for point in dataframe['right_gaze_point_on_display_area']]
+
+    left_x_values = [translate2ScreenX(x) for x in left_x_values]
+    left_y_values = [translate2ScreenY(y) for y in left_y_values]
+    right_x_values = [translate2ScreenX(x) for x in right_x_values]
+    right_y_values = [translate2ScreenY(y) for y in right_y_values]
+
+    # take the average of all left_x_values and left_y_values
+
+    x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
+    y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
+
     element = "o"
     if (x < -0.33 and y > 0.33):
         element += "1"
@@ -148,3 +164,34 @@ def calculatePower(left_x, left_y, right_x, right_y):
         
     return leftMagnitude, rightMagnitude
 
+# translate2ScreenX takes in a value and returns the translated x coordinate
+def translate2ScreenX(xcoord):
+    output = 2*xcoord - 1
+    if output < -1:
+        return -1
+    elif output > 1:
+        return 1
+    return output
+
+# translate2ScreenY takes in a value and returns the translated y coordinate
+def translate2ScreenY(ycoord):
+    output = 1 - 2*ycoord
+    if output < -1:
+        return -1
+    elif output > 1:
+        return 1
+    return output
+
+# gaze_detection takes in a dataframe and column name and returns x and y coordinates
+# - column_name must be left eye or right eye data values
+def gaze_detection(dataframe, column_name):
+    # extract x and y coordinates from the specified column
+    x_values = [point[0] for point in dataframe[column_name]]
+    y_values = [point[1] for point in dataframe[column_name]]
+    x_value = translate2ScreenX(x_values[0])
+    y_value = translate2ScreenY(y_values[0])
+
+    # assume that there's only one value in x- and y-values
+    
+    # return an id from 01 to 09
+    return x_values, y_values
