@@ -53,46 +53,6 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
     
     else:
         return df, dict_list
-    
-# gaze id takes in an x and y coordinate and returns the id that should be highlighted
-def gaze_id(dataframe):
-    # extract x and y coordinates from the specified column
-    left_x_values = [point[0] for point in dataframe['left_gaze_point_on_display_area']]
-    left_y_values = [point[1] for point in dataframe['left_gaze_point_on_display_area']]
-    right_x_values = [point[0] for point in dataframe['right_gaze_point_on_display_area']]
-    right_y_values = [point[1] for point in dataframe['right_gaze_point_on_display_area']]
-
-    left_x_values = [translate2ScreenX(x) for x in left_x_values]
-    left_y_values = [translate2ScreenY(y) for y in left_y_values]
-    right_x_values = [translate2ScreenX(x) for x in right_x_values]
-    right_y_values = [translate2ScreenY(y) for y in right_y_values]
-
-    # take the average of all left_x_values and left_y_values
-
-    x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
-    y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
-
-    element = "o"
-    if (x < -0.33 and y > 0.33):
-        element += "1"
-    elif (x > -0.33 and x < 0.33 and y > 0.33):
-        element += "2"
-    elif (x > 0.33 and y > 0.33):
-        element += "3"
-    elif (x < -0.33 and y > -0.33 and y < 0.33):
-        element += "4"
-    elif (x > -0.33 and x < 0.33 and y > -0.33 and y < 0.33):
-        element += "5"
-    elif (x > 0.33 and y > -0.33 and y < 0.33):
-        element += "6"
-    elif (x < -0.33 and y < -0.33):
-        element += "7"
-    elif (x > -0.33 and x < 0.33 and y < -0.33):
-        element += "8"
-    elif (x > 0.33 and y < -0.33):
-        element += "9"
-
-    return element
      
 def safe_tuple_eval(s, default_value=None):
     """
@@ -151,19 +111,6 @@ def build_dataset_from_csv(file_path, label):
     #df = df.applymap(lambda x: None if pd.isna(x) else x)
     return df
 
-# calculatePower takes in 4 args (left and right eye coords) and returns left and right magnitude
-def calculatePower(left_x, left_y, right_x, right_y):
-    leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
-    rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
-
-    if abs(leftMagnitude) > 1.0:
-        leftMagnitude /= abs(leftMagnitude)
-
-    if abs(rightMagnitude) > 1.0:
-        rightMagnitude /= abs(rightMagnitude)
-        
-    return leftMagnitude, rightMagnitude
-
 # translate2ScreenX takes in a value and returns the translated x coordinate
 def translate2ScreenX(xcoord):
     output = 2*xcoord - 1
@@ -182,6 +129,50 @@ def translate2ScreenY(ycoord):
         return 1
     return output
 
+# gaze id takes in an x and y coordinate and returns the id that should be highlighted
+def gaze_id(dataframe):
+    left_x, left_y, right_x, right_y = parse_gaze_data(dataframe)
+    x = (left_x + right_x) / 2
+    y = (left_y + right_y) / 2
+
+    element = "o"
+    if (x < -0.33 and y > 0.33):
+        element += "1"
+    elif (x > -0.33 and x < 0.33 and y > 0.33):
+        element += "2"
+    elif (x > 0.33 and y > 0.33):
+        element += "3"
+    elif (x < -0.33 and y > -0.33 and y < 0.33):
+        element += "4"
+    elif (x > -0.33 and x < 0.33 and y > -0.33 and y < 0.33):
+        element += "5"
+    elif (x > 0.33 and y > -0.33 and y < 0.33):
+        element += "6"
+    elif (x < -0.33 and y < -0.33):
+        element += "7"
+    elif (x > -0.33 and x < 0.33 and y < -0.33):
+        element += "8"
+    elif (x > 0.33 and y < -0.33):
+        element += "9"
+
+    return element
+
+
+# calculatePower takes in a dataframe containing eye data and returns left and right magnitude
+def calculatePower(dataframe):
+    left_x, left_y, right_x, right_y = parse_gaze_data(dataframe)
+
+    leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
+    rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
+
+    if abs(leftMagnitude) > 1.0:
+        leftMagnitude /= abs(leftMagnitude)
+
+    if abs(rightMagnitude) > 1.0:
+        rightMagnitude /= abs(rightMagnitude)
+        
+    return leftMagnitude, rightMagnitude
+
 # gaze_detection takes in a dataframe and column name and returns x and y coordinates
 # - column_name must be left eye or right eye data values
 def gaze_detection(dataframe, column_name):
@@ -195,3 +186,29 @@ def gaze_detection(dataframe, column_name):
     
     # return an id from 01 to 09
     return x_values, y_values
+
+# parses a dataframe into 4 variables: left_x, left_y, right_x, right_y
+def parse_gaze_data(dataframe):
+     # extract x and y coordinates from the specified column
+    left_x_values = [point[0] for point in dataframe['left_gaze_point_on_display_area']]
+    left_y_values = [point[1] for point in dataframe['left_gaze_point_on_display_area']]
+    right_x_values = [point[0] for point in dataframe['right_gaze_point_on_display_area']]
+    right_y_values = [point[1] for point in dataframe['right_gaze_point_on_display_area']]
+
+    left_x_values = [translate2ScreenX(x) for x in left_x_values]
+    left_y_values = [translate2ScreenY(y) for y in left_y_values]
+    right_x_values = [translate2ScreenX(x) for x in right_x_values]
+    right_y_values = [translate2ScreenY(y) for y in right_y_values]
+
+    # take the average of all left_x_values and left_y_values
+
+    left_x = mean(left_x_values)
+    left_y = mean(left_y_values)
+    right_x = mean(right_x_values)
+    right_y = mean(right_y_values)
+
+    return left_x, left_y, right_x, right_y
+
+# mean takes in a list and returns the mean of the list
+def mean(list):
+    return sum(list) / len(list)
