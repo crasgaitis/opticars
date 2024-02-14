@@ -1,5 +1,5 @@
 import time 
-# import tobii_research as tr
+import tobii_research as tr
 import pandas as pd
 import math
 import ast
@@ -195,3 +195,13 @@ def gaze_detection(dataframe, column_name):
     
     # return an id from 01 to 09
     return x_values, y_values
+
+def get_tracker():
+  all_eyetrackers = tr.find_all_eyetrackers()
+
+  for tracker in all_eyetrackers:
+    print("Model: " + tracker.model)
+    print("Serial number: " + tracker.serial_number) 
+    print(f"Can stream eye images: {tr.CAPABILITY_HAS_EYE_IMAGES in tracker.device_capabilities}")
+    print(f"Can stream gaze data: {tr.CAPABILITY_HAS_GAZE_DATA in tracker.device_capabilities}")
+    return tracker
