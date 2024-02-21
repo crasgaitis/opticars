@@ -2,7 +2,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 import threading
 import eye_tracking
-from utils import build_dataset, gaze_id, get_tracker, gaze_data
+from utils import build_dataset, gaze_id, get_tracker
 
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode='eventlet')
@@ -22,7 +22,6 @@ def get_eye_tracking_data():
     data = gaze_id(df)
     print(data)
     
-    # print(eye_tracking_data)
     socketio.emit('update_eye_tracking_data_', {'data': data})
 
 if __name__ == '__main__':
