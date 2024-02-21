@@ -3,6 +3,10 @@ import tobii_research as tr
 import pandas as pd
 import math
 import ast
+import threading
+
+global_gaze_data = None
+lock = threading.Lock()
 
 def combine_dicts_with_labels(dict_list):
     combined_dict = {}
@@ -14,18 +18,19 @@ def combine_dicts_with_labels(dict_list):
 
 def gaze_data_callback(gaze_data):
   global global_gaze_data
-  global_gaze_data = gaze_data
+  with lock:
+    global_gaze_data = gaze_data
   
 def gaze_data(eyetracker, wait_time=5):
-    #records for wait_time number of seconds
   global global_gaze_data
-
-  # print("Getting data...")
-  eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
+  
+  with lock:
+    eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
 
   time.sleep(wait_time)
-
-  eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
+  
+  with lock:
+    eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
 
   return global_gaze_data
 

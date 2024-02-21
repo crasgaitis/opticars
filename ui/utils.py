@@ -3,6 +3,10 @@ import tobii_research as tr
 import pandas as pd
 import math
 import ast
+import threading
+
+global_gaze_data = None
+lock = threading.Lock()
 
 def combine_dicts_with_labels(dict_list):
     combined_dict = {}
@@ -14,18 +18,19 @@ def combine_dicts_with_labels(dict_list):
 
 def gaze_data_callback(gaze_data):
   global global_gaze_data
-  global_gaze_data = gaze_data
+  with lock:
+    global_gaze_data = gaze_data
   
 def gaze_data(eyetracker, wait_time=5):
-    #records for wait_time number of seconds
   global global_gaze_data
-
-  # print("Getting data...")
-  eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
+  
+  with lock:
+    eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
 
   time.sleep(wait_time)
-
-  eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
+  
+  with lock:
+    eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
 
   return global_gaze_data
 
@@ -57,6 +62,7 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
 # gaze id takes in an x and y coordinate and returns the id that should be highlighted
 def gaze_id(dataframe):
     # extract x and y coordinates from the specified column
+    print(dataframe)
     left_x_values = [point[0] for point in dataframe['left_gaze_point_on_display_area']]
     left_y_values = [point[1] for point in dataframe['left_gaze_point_on_display_area']]
     right_x_values = [point[0] for point in dataframe['right_gaze_point_on_display_area']]
