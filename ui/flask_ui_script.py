@@ -14,17 +14,19 @@ def index():
 @socketio.on('get_eye_tracking_data')
 def get_eye_tracking_data():
 
+    tracker = get_tracker()
+
     # eye_tracking_data = eye_tracking.eye_tracking_data
     # get a dataframe from the build dataset function -> from csv just for testing
-    tracker = get_tracker()
-    test = gaze_data(tracker, 0.01)
-    df = build_dataset(tracker, 'test', time_step_sec = 0.1, tot_time_min=0.15)
+    df, _ = build_dataset(tracker, 'test', time_step_sec = 0.15, tot_time_min=0.15)
     data = gaze_id(df)
+    print(data)
     
     # print(eye_tracking_data)
     socketio.emit('update_eye_tracking_data_', {'data': data})
 
 if __name__ == '__main__':
+    
     # start the eye tracking script
     threading.Thread(target=get_eye_tracking_data).start()
 
