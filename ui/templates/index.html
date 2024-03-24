@@ -5,56 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eye Tracking App</title>
     <link rel="stylesheet" href="/static/css/style.css" />
-    <script src="main.js"></script>
 </head>
 <body>
     <h1 id="eyeTrackingData">Eye Tracking Data: </h1>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
-    <script>
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
-
-        // get updates from the server
-        socket.on('update_eye_tracking_data', function(data) {
-            document.getElementById('eyeTrackingData').innerText = 'Eye Tracking Data: ' + data.data;
-        });
-
-        // request updates from the server
-        setInterval(function() {
-            socket.emit('get_eye_tracking_data');
-
-            var objectId = gaze_id(data); // objectId is the return from the gaze_id function
-            update(objectId);
-        }, 100);
-
-        
-
-        function update(objectId) { // gets objectId from gaze_id() in utils.py
-            resetBackgroundColor();
-            updateBackgroundColorById(objectId, 'green');
-        }
-
-        function updateBackgroundColorById(objectId, newColor) {
-            // Get the element with the specified ID
-            var element = document.getElementById(objectId);
-
-            // Check if the element exists
-            if (element) {
-                // Update the background color
-                element.style.backgroundColor = newColor;
-            } else {
-                console.error("Element with ID '" + objectId + "' not found.");
-            }
-        }
-
-
-        function resetBackgroundColor() {
-            var element = document.getElementsByClassName("oval");
-            element.style.backgroundColor = "red";
-        }  
-
-
-    </script>
     
     <container class="main" id="main">
         <container class="flex-container" id="c1">
@@ -108,6 +61,59 @@
 
         // document.getElementById("o9").onmouseover = function() {updateBackgroundColorById('o9', 'green')};
         // document.getElementById("o9").onmouseout = function() {updateBackgroundColorById('o9', 'red')};
+
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+    <script>
+        console.log('test')
+        var socket = io.connect('http://127.0.0.1:4999/');
+
+        socket.on('connect', function() {
+            console.log('Connected to server');
+        });
+
+        // get updates from the server
+        socket.on('update_eye_tracking_data', function(data) {
+            document.getElementById('eyeTrackingData').innerText = 'Eye Tracking Data: ' + data.data;
+            var objectId = data.data; // objectId is the return from the gaze_id function
+            // console.log(objectId)
+            update(objectId);
+        });
+
+        // request updates from the server
+        
+        setInterval(function() {
+            socket.emit('get_eye_tracking_data');
+        }, 250);
+
+        function update(objectId) { // gets objectId from gaze_id() in utils.py
+            resetBackgroundColor();
+            updateBackgroundColorById(objectId, 'green');
+        }
+
+        function updateBackgroundColorById(objectId, newColor) {
+            // Get the element with the specified ID
+            var element = document.getElementById(objectId);
+            // console.log(element);
+
+            // Check if the element exists
+            if (element) {
+                // Update the background color
+                element.style.backgroundColor = newColor;
+            } else {
+                console.error("Element with ID '" + objectId + "' not found.");
+            }
+        }
+
+
+        function resetBackgroundColor() {
+            var elements = document.getElementsByClassName("oval");
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.backgroundColor = "red";
+            }
+        }
+
 
     </script>
 
