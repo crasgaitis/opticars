@@ -75,18 +75,19 @@
 
         // get updates from the server
         socket.on('update_eye_tracking_data', function(data) {
+            console.log('PLEASE')
             document.getElementById('eyeTrackingData').innerText = 'Eye Tracking Data: ' + data.data;
             var objectId = data.data; // objectId is the return from the gaze_id function
-            // console.log(objectId)
+            console.log(objectId)
             update(objectId);
         });
 
         // request updates from the server
         
         setInterval(function() {
+            console.log('emit get eye tracking')
             socket.emit('get_eye_tracking_data');
-            console.log(new Date());
-        }, 350);
+        }, 1000);
 
         function update(objectId) { // gets objectId from gaze_id() in utils.py
             resetBackgroundColor();

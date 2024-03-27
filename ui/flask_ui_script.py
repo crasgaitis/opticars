@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 import threading
-from utils import gaze_id, get_tracker, gaze_data
+from utils_folder.utils import gaze_id, get_tracker, gaze_data
 
 app = Flask(__name__)
 app.logger.disabled = True
@@ -20,17 +20,12 @@ def get_eye_tracking_data():
         
         try:
             TRACKER = get_tracker()
-            out = gaze_data(TRACKER, 0.3)
+            out = gaze_data(TRACKER, 1)
             data = gaze_id(out)
             
             socketio.emit('update_eye_tracking_data', {'data': data})
         finally:
             lock.release()
-
-# def get_eye_tracking_data():
-#     TRACKER = get_tracker()
-#     out = gaze_data(TRACKER, 0.3)
-#     data = gaze_id(out)
     
 #     socketio.emit('update_eye_tracking_data', {'data': data})
 

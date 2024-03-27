@@ -70,7 +70,7 @@ def gaze_id(dataframe):
     
     if any(dataframe[key] == 0 for key in ['left_gaze_point_validity', 'right_gaze_point_validity']):
         print('ouch!')
-        element = "o1"
+        element = "o2"
     else:
         left_gp = dataframe['left_gaze_point_on_display_area']
         right_gp = dataframe['right_gaze_point_on_display_area']
