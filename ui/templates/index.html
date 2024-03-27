@@ -85,7 +85,8 @@
         
         setInterval(function() {
             socket.emit('get_eye_tracking_data');
-        }, 250);
+            console.log(new Date());
+        }, 350);
 
         function update(objectId) { // gets objectId from gaze_id() in utils.py
             resetBackgroundColor();

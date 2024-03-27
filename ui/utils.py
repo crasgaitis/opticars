@@ -33,6 +33,7 @@ def gaze_data(eyetracker, wait_time=5):
   with lock:
     eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
 
+  print(global_gaze_data)
   return global_gaze_data
 
 def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(), 
@@ -45,10 +46,10 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
     
     for _ in range(intervals):
         data = gaze_data(tracker, time_step_sec)
-        # print(data)
+        print(data)
         dict_list.append(data)
         
-    print(data)
+    # print(data)
     
     tot_dict = combine_dicts_with_labels(dict_list)
     index = range(intervals)
@@ -90,6 +91,7 @@ def gaze_id(dataframe):
 
         x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
         y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
+        print(str(x) + ", " + str(y))
 
         element = "o"
         if (x < -0.33 and y > 0.33):
@@ -110,7 +112,8 @@ def gaze_id(dataframe):
             element += "8"
         elif (x > 0.33 and y < -0.33):
             element += "9"
-
+    
+    print(element)
     return element
      
 def safe_tuple_eval(s, default_value=None):
@@ -229,3 +232,22 @@ def get_tracker():
     # print(f"Can stream eye images: {tr.CAPABILITY_HAS_EYE_IMAGES in tracker.device_capabilities}")
     # print(f"Can stream gaze data: {tr.CAPABILITY_HAS_GAZE_DATA in tracker.device_capabilities}")
     return tracker
+
+def detect_movement_example_with_scaling(data_dict):
+    # data_dict should only have 1 row
+    # assert len(data_dict) == 1 
+        
+    left_x, left_y = data_dict['left_gaze_point_on_display_area'][0]
+    right_x, right_y = data_dict['right_gaze_point_on_display_area'][0]
+    
+    if left_x == 0:
+        direction_left = math.pi / 2 if left_y > 0 else -math.pi / 2
+    else:
+        direction_left = math.atan(left_y / left_x)
+    
+    scaled_direction_left = direction_left / (math.pi / 2)
+    magnitude_left = math.sqrt(left_x**2 + left_y**2)
+    
+    scaled_magnitude_left = magnitude_left / math.sqrt(2)
+    
+    return scaled_direction_left, scaled_magnitude_left

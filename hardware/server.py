@@ -18,6 +18,8 @@
 
 import serial
 import time
+from ui.utils import build_dataset, get_tracker, detect_movement_example_with_scaling
+
 
 ################################################
 # ARDUINO (KINDA) SETUP & LOOP
@@ -29,14 +31,19 @@ import time
     @return The serial connection for the controller and the serial connection for the car.
 '''
 def setup():
+    # GIANT TODO: have this create controller / car objects / classes that I can call send message on
+    # GIANT TODO 2: Need to have a test that gets the bounds of the eye tracker.
     # trying to mimic arduino code for readability
     baud = 9600
 
-    # set up serial port to communicate with the controller via usb
-    controllerPort = "/dev/cu.usbmodem14101"
-    controllerSerial = serial.Serial(controllerPort, baud)
-    # give time to connect
-    time.sleep(2)
+    # TODO: Make each controller / car setup functions for better modular code
+    # # set up serial port to communicate with the controller via usb
+    # controllerPort = "/dev/cu.usbmodem14101"
+    # controllerSerial = serial.Serial(controllerPort, baud)
+    # # give time to connect
+    # time.sleep(2)
+    tracker = get_tracker()
+
 
     # set up serial port to communicate with the car over bluetooth
     bluetoothPort = "/dev/cu.HC-06"
@@ -44,7 +51,8 @@ def setup():
     # give time to connect
     time.sleep(2)
 
-    return controllerSerial, carSerial
+    # return controllerSerial, carSerial
+    return tracker, carSerial
 
 '''
     @brief Loop a cycle of instructions: read data from the thumbstick and send a command to the car.
@@ -56,12 +64,14 @@ def setup():
 def loop(controller, car, debug=False):
     # Will process messages one at a time and will require an RESP or ACK message from controller or car respectively
 
-    # Send get data request and get response from controller
-    req = "REQ:DATA\n"
-    resp = sendReq(controller, req, debug)
+    # # Send get data request and get response from controller
+    # req = "REQ:DATA\n"
+    # resp = sendReq(controller, req, debug)
+    
+    cmd = sendReq(controller)
 
-    # create cmd message from this resp
-    cmd = createCmd(resp)
+    # # create cmd message from this resp
+    # cmd = createCmd(resp)
 
     # Send cmd message to the car
     # Right now we don't really need to handle the ack message but in the future could support better error handling
@@ -96,6 +106,13 @@ def sendReq(controller, req, debug=False):
             print("Received: " + resp)
 
     return resp
+
+def sendReq(controller):
+    data, dict_list = build_dataset(tracker, 'cat', time_step_sec=0.15, tot_time_min=0.0025)
+    data2 = pd.DataFrame(data.iloc[0]).transpose()
+    print(data)
+    mag, dir = detect_movement_example_with_scaling(data2)
+    print(f"Mag: {mag}, Dir: {dir}")
 
 '''
     @brief Sends the given command message to the car and returns its acknowledgement (if applicable)
@@ -170,8 +187,8 @@ def createCmd(dataResp):
     @param car Serial connection for car.
 '''
 def enableDebug(controller, car):
-    # Enable debug mode for the controller
-    sendReq(controller, "REQ:DEBUG TRUE\n")
+    # # Enable debug mode for the controller
+    # sendReq(controller, "REQ:DEBUG TRUE\n")
 
     # Enable debug mode for the car
     sendCmd(car, "CMD:DEBUG TRUE\n")
@@ -212,7 +229,7 @@ def main():
             
     # when we want to end the program safely close the serial ports
     except KeyboardInterrupt:
-        controller.close()
+        # controller.close()
         car.close()
 
 # python code so the script of the file is only run when run as main

@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.logger.disabled = True
 socketio = SocketIO(app, async_mode='eventlet')
 
+lock = threading.Lock()
 
 @app.route('/')
 def index():
@@ -14,11 +15,24 @@ def index():
 
 @socketio.on('get_eye_tracking_data')
 def get_eye_tracking_data():
-    TRACKER = get_tracker()
-    out = gaze_data(TRACKER, 0.3)
-    data = gaze_id(out)
+    while True:
+        lock.acquire()
+        
+        try:
+            TRACKER = get_tracker()
+            out = gaze_data(TRACKER, 0.3)
+            data = gaze_id(out)
+            
+            socketio.emit('update_eye_tracking_data', {'data': data})
+        finally:
+            lock.release()
+
+# def get_eye_tracking_data():
+#     TRACKER = get_tracker()
+#     out = gaze_data(TRACKER, 0.3)
+#     data = gaze_id(out)
     
-    socketio.emit('update_eye_tracking_data', {'data': data})
+#     socketio.emit('update_eye_tracking_data', {'data': data})
 
 if __name__ == '__main__':
     
