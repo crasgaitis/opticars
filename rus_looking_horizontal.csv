@@ -1,0 +1,13 @@
+,device_time_stamp,system_time_stamp,left_gaze_point_on_display_area,left_gaze_point_in_user_coordinate_system,left_gaze_point_validity,left_pupil_diameter,left_pupil_validity,left_gaze_origin_in_user_coordinate_system,left_gaze_origin_in_trackbox_coordinate_system,left_gaze_origin_validity,right_gaze_point_on_display_area,right_gaze_point_in_user_coordinate_system,right_gaze_point_validity,right_pupil_diameter,right_pupil_validity,right_gaze_origin_in_user_coordinate_system,right_gaze_origin_in_trackbox_coordinate_system,right_gaze_origin_validity,type
+timestep_1,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat
+timestep_2,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat
+timestep_3,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat
+timestep_4,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat
+timestep_5,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat
+timestep_6,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat
+timestep_7,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat
+timestep_8,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat
+timestep_9,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat
+timestep_10,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat
+timestep_11,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat
+timestep_12,344107217,315940447,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,"(nan, nan)","(nan, nan, nan)",0,,0,"(nan, nan, nan)","(nan, nan, nan)",0,cat

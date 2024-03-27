@@ -5,6 +5,7 @@ import math
 import ast
 import threading
 
+
 global_gaze_data = None
 lock = threading.Lock()
 
@@ -32,6 +33,7 @@ def gaze_data(eyetracker, wait_time=5):
   with lock:
     eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
 
+  print(global_gaze_data)
   return global_gaze_data
 
 def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(), 
@@ -44,11 +46,15 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
     
     for _ in range(intervals):
         data = gaze_data(tracker, time_step_sec)
-        # print(data)
+        print(data)
         dict_list.append(data)
+        
+    # print(data)
     
     tot_dict = combine_dicts_with_labels(dict_list)
-    df = pd.DataFrame(tot_dict).T
+    index = range(intervals)
+
+    df = pd.DataFrame(tot_dict, index=index).T
     df['type'] = label
         
     if add_on:
@@ -61,43 +67,53 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
     
 # gaze id takes in an x and y coordinate and returns the id that should be highlighted
 def gaze_id(dataframe):
-    # extract x and y coordinates from the specified column
-    print(dataframe)
-    left_x_values = [point[0] for point in dataframe['left_gaze_point_on_display_area']]
-    left_y_values = [point[1] for point in dataframe['left_gaze_point_on_display_area']]
-    right_x_values = [point[0] for point in dataframe['right_gaze_point_on_display_area']]
-    right_y_values = [point[1] for point in dataframe['right_gaze_point_on_display_area']]
+    
+    if any(dataframe[key] == 0 for key in ['left_gaze_point_validity', 'right_gaze_point_validity']):
+        print('ouch!')
+        element = "o1"
+    else:
+        left_gp = dataframe['left_gaze_point_on_display_area']
+        right_gp = dataframe['right_gaze_point_on_display_area']
 
-    left_x_values = [translate2ScreenX(x) for x in left_x_values]
-    left_y_values = [translate2ScreenY(y) for y in left_y_values]
-    right_x_values = [translate2ScreenX(x) for x in right_x_values]
-    right_y_values = [translate2ScreenY(y) for y in right_y_values]
+        # extract x and y coordinates from the specified column
+        left_x_values = [point[0] for point in [left_gp]]
+        left_y_values = [point[1] for point in [left_gp]]
+        right_x_values = [point[0] for point in [right_gp]]
+        right_y_values = [point[1] for point in [right_gp]]
 
-    # take the average of all left_x_values and left_y_values
+        # Translate the x and y coordinates
+        left_x_values = [translate2ScreenX(x) for x in left_x_values]
+        left_y_values = [translate2ScreenY(y) for y in left_y_values]
+        right_x_values = [translate2ScreenX(x) for x in right_x_values]
+        right_y_values = [translate2ScreenY(y) for y in right_y_values]
 
-    x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
-    y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
+        # take the average of all left_x_values and left_y_values
 
-    element = "o"
-    if (x < -0.33 and y > 0.33):
-        element += "1"
-    elif (x > -0.33 and x < 0.33 and y > 0.33):
-        element += "2"
-    elif (x > 0.33 and y > 0.33):
-        element += "3"
-    elif (x < -0.33 and y > -0.33 and y < 0.33):
-        element += "4"
-    elif (x > -0.33 and x < 0.33 and y > -0.33 and y < 0.33):
-        element += "5"
-    elif (x > 0.33 and y > -0.33 and y < 0.33):
-        element += "6"
-    elif (x < -0.33 and y < -0.33):
-        element += "7"
-    elif (x > -0.33 and x < 0.33 and y < -0.33):
-        element += "8"
-    elif (x > 0.33 and y < -0.33):
-        element += "9"
+        x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
+        y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
+        print(str(x) + ", " + str(y))
 
+        element = "o"
+        if (x < -0.33 and y > 0.33):
+            element += "1"
+        elif (x > -0.33 and x < 0.33 and y > 0.33):
+            element += "2"
+        elif (x > 0.33 and y > 0.33):
+            element += "3"
+        elif (x < -0.33 and y > -0.33 and y < 0.33):
+            element += "4"
+        elif (x > -0.33 and x < 0.33 and y > -0.33 and y < 0.33):
+            element += "5"
+        elif (x > 0.33 and y > -0.33 and y < 0.33):
+            element += "6"
+        elif (x < -0.33 and y < -0.33):
+            element += "7"
+        elif (x > -0.33 and x < 0.33 and y < -0.33):
+            element += "8"
+        elif (x > 0.33 and y < -0.33):
+            element += "9"
+    
+    print(element)
     return element
      
 def safe_tuple_eval(s, default_value=None):
@@ -122,6 +138,11 @@ def safe_tuple_eval(s, default_value=None):
         # Return default value if conversion fails
         return default_value
 
+def safe_tuple_eval_for_dict(s, default_value = None):
+    try:
+        return ast.literal_eval(s)
+    except (ValueError, SyntaxError):
+        return default_value
 
 def build_dataset_from_csv(file_path, label):
     '''
@@ -206,8 +227,27 @@ def get_tracker():
   all_eyetrackers = tr.find_all_eyetrackers()
 
   for tracker in all_eyetrackers:
-    print("Model: " + tracker.model)
-    print("Serial number: " + tracker.serial_number) 
-    print(f"Can stream eye images: {tr.CAPABILITY_HAS_EYE_IMAGES in tracker.device_capabilities}")
-    print(f"Can stream gaze data: {tr.CAPABILITY_HAS_GAZE_DATA in tracker.device_capabilities}")
+    # print("Model: " + tracker.model)
+    # print("Serial number: " + tracker.serial_number) 
+    # print(f"Can stream eye images: {tr.CAPABILITY_HAS_EYE_IMAGES in tracker.device_capabilities}")
+    # print(f"Can stream gaze data: {tr.CAPABILITY_HAS_GAZE_DATA in tracker.device_capabilities}")
     return tracker
+
+def detect_movement_example_with_scaling(data_dict):
+    # data_dict should only have 1 row
+    # assert len(data_dict) == 1 
+        
+    left_x, left_y = data_dict['left_gaze_point_on_display_area'][0]
+    right_x, right_y = data_dict['right_gaze_point_on_display_area'][0]
+    
+    if left_x == 0:
+        direction_left = math.pi / 2 if left_y > 0 else -math.pi / 2
+    else:
+        direction_left = math.atan(left_y / left_x)
+    
+    scaled_direction_left = direction_left / (math.pi / 2)
+    magnitude_left = math.sqrt(left_x**2 + left_y**2)
+    
+    scaled_magnitude_left = magnitude_left / math.sqrt(2)
+    
+    return scaled_direction_left, scaled_magnitude_left
