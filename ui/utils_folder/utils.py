@@ -178,18 +178,55 @@ def build_dataset_from_csv(file_path, label):
     #df = df.applymap(lambda x: None if pd.isna(x) else x)
     return df
 
-# calculatePower takes in 4 args (left and right eye coords) and returns left and right magnitude
-def calculatePower(left_x, left_y, right_x, right_y):
-    leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
-    rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
+def calculatePower(dataframe):
+    
+    if any(dataframe[key] == 0 for key in ['left_gaze_point_validity', 'right_gaze_point_validity']):
+        print('ouch!')
+        return 0, 0
+    else:
+        left_gp = dataframe['left_gaze_point_on_display_area']
+        right_gp = dataframe['right_gaze_point_on_display_area']
 
-    if abs(leftMagnitude) > 1.0:
-        leftMagnitude /= abs(leftMagnitude)
+        # extract x and y coordinates from the specified column
+        left_x_values = [point[0] for point in [left_gp]]
+        left_y_values = [point[1] for point in [left_gp]]
+        right_x_values = [point[0] for point in [right_gp]]
+        right_y_values = [point[1] for point in [right_gp]]
 
-    if abs(rightMagnitude) > 1.0:
-        rightMagnitude /= abs(rightMagnitude)
+        # Translate the x and y coordinates
+        left_x_values = [translate2ScreenX(x) for x in left_x_values]
+        left_y_values = [translate2ScreenY(y) for y in left_y_values]
+        right_x_values = [translate2ScreenX(x) for x in right_x_values]
+        right_y_values = [translate2ScreenY(y) for y in right_y_values]
+
+        # take the average of all left_x_values and left_y_values
+
+        x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
+        y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
         
-    return leftMagnitude, rightMagnitude
+        print(str(round(x, 2)) + ", " + str(round(y, 2)))
+        
+        leftMagnitude = y + x
+        rightMagnitude = y - x
+        if abs(leftMagnitude) > 1.0:
+            leftMagnitude /= abs(leftMagnitude)
+        if abs(rightMagnitude) > 1.0:
+            rightMagnitude /= abs(rightMagnitude)
+    
+        return (int) (round(leftMagnitude, 1) * 10), (int) (round(rightMagnitude, 1) * 10)
+
+# # calculatePower takes in 4 args (left and right eye coords) and returns left and right magnitude
+# def calculatePower(left_x, left_y, right_x, right_y):
+#     leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
+#     rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
+
+#     if abs(leftMagnitude) > 1.0:
+#         leftMagnitude /= abs(leftMagnitude)
+
+#     if abs(rightMagnitude) > 1.0:
+#         rightMagnitude /= abs(rightMagnitude)
+        
+#     return leftMagnitude, rightMagnitude
 
 # translate2ScreenX takes in a value and returns the translated x coordinate
 def translate2ScreenX(xcoord):

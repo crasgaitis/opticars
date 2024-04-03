@@ -1,4 +1,4 @@
-from utils import build_dataset, get_tracker, detect_movement_example_with_scaling
+from utils import build_dataset, get_tracker, detect_movement_example_with_scaling, calculatePower
 import pandas as pd
 import time
 
@@ -10,4 +10,7 @@ while True:
     print(data)
     mag, dir = detect_movement_example_with_scaling(data2)
     print(f"Mag: {mag}, Dir: {dir}")
+
+    leftMag, rightMag = calculatePower(data2)
+    print(f"Left: {leftMag}, Right: {rightMag}")
     # time.sleep(0.1)
