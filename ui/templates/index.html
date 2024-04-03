@@ -75,7 +75,6 @@
 
         // get updates from the server
         socket.on('update_eye_tracking_data', function(data) {
-            console.log('PLEASE')
             document.getElementById('eyeTrackingData').innerText = 'Eye Tracking Data: ' + data.data;
             var objectId = data.data; // objectId is the return from the gaze_id function
             console.log(objectId)
