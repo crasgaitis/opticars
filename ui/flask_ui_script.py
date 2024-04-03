@@ -25,7 +25,6 @@ def get_eye_tracking_data():
             
             socketio.emit('update_eye_tracking_data', {'data': data})
             print(data)
-            
         finally:
             lock.release()
     
