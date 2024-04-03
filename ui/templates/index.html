@@ -38,35 +38,9 @@
         </container>
     </container>  
 
-    <script>
-
-        // document.getElementById("o1").onmouseover = function() {updateBackgroundColorById('o1', 'green')};
-        // document.getElementById("o1").onmouseout = function() {updateBackgroundColorById('o1', 'red')};
-
-        // document.getElementById("o2").onmouseover = function() {updateBackgroundColorById('o2', 'green')};
-        // document.getElementById("o2").onmouseout = function() {updateBackgroundColorById('o2', 'red')};
-
-        // document.getElementById("o3").onmouseover = function() {updateBackgroundColorById('o3', 'green')};
-        // document.getElementById("o3").onmouseout = function() {updateBackgroundColorById('o3', 'red')};
-
-        // document.getElementById("o4").onmouseover = function() {updateBackgroundColorById('o4', 'green')};
-        // document.getElementById("o4").onmouseout = function() {updateBackgroundColorById('o4', 'red')};
-
-        // document.getElementById("o6").onmouseover = function() {updateBackgroundColorById('o6', 'green')};
-        // document.getElementById("o6").onmouseout = function() {updateBackgroundColorById('o6', 'red')};
-
-        // document.getElementById("o7").onmouseover = function() {updateBackgroundColorById('o7', 'green')};
-        // document.getElementById("o7").onmouseout = function() {updateBackgroundColorById('o7', 'red')};
-
-
-        // document.getElementById("o9").onmouseover = function() {updateBackgroundColorById('o9', 'green')};
-        // document.getElementById("o9").onmouseout = function() {updateBackgroundColorById('o9', 'red')};
-
-    </script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
     <script>
-        console.log('test')
+        console.log('test');
         var socket = io.connect('http://127.0.0.1:4999/');
 
         socket.on('connect', function() {
@@ -75,17 +49,18 @@
 
         // get updates from the server
         socket.on('update_eye_tracking_data', function(data) {
+            console.log('got it');
             document.getElementById('eyeTrackingData').innerText = 'Eye Tracking Data: ' + data.data;
             var objectId = data.data; // objectId is the return from the gaze_id function
-            console.log(objectId)
+            console.log(objectId);
             update(objectId);
         });
 
         // request updates from the server
-        
         setInterval(function() {
-            console.log('emit get eye tracking')
+            console.log('emit get eye tracking');
             socket.emit('get_eye_tracking_data');
+            console.log('emitted yayy')
         }, 1000);
 
         function update(objectId) { // gets objectId from gaze_id() in utils.py

@@ -33,7 +33,7 @@ def gaze_data(eyetracker, wait_time=5):
   with lock:
     eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
 
-  print(global_gaze_data)
+#   print(global_gaze_data)
   return global_gaze_data
 
 def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(), 
@@ -69,7 +69,7 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
 def gaze_id(dataframe):
     
     if any(dataframe[key] == 0 for key in ['left_gaze_point_validity', 'right_gaze_point_validity']):
-        print('ouch!')
+        # print('ouch!')
         element = "o2"
     else:
         left_gp = dataframe['left_gaze_point_on_display_area']
@@ -91,7 +91,7 @@ def gaze_id(dataframe):
 
         x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
         y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
-        print(str(x) + ", " + str(y))
+        # print(str(x) + ", " + str(y))
 
         element = "o"
         if (x < -0.33 and y > 0.33):
@@ -113,7 +113,7 @@ def gaze_id(dataframe):
         elif (x > 0.33 and y < -0.33):
             element += "9"
     
-    print(element)
+    # print(element)
     return element
      
 def safe_tuple_eval(s, default_value=None):

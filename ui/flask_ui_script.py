@@ -24,6 +24,8 @@ def get_eye_tracking_data():
             data = gaze_id(out)
             
             socketio.emit('update_eye_tracking_data', {'data': data})
+            print(data)
+            
         finally:
             lock.release()
     
