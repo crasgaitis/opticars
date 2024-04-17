@@ -1,15 +1,6 @@
 import pandas as pd
+from hardware.server import enableDebug, disableDebug, setup, loop
 from utils import build_dataset, get_tracker, calculatePower
-
-
-# def sendReq(controller):
-#     data, _ = build_dataset(tracker, 'cat')
-#     data2 = pd.DataFrame(data.iloc[0]).transpose()
-#     left, right = calculatePower(data2)
-#     # print(f"Mag: {mag}, Dir: {dir}")
-
-tracker = get_tracker()
-
 
 def sendReq(controller, debug=False):   
 
@@ -34,5 +25,26 @@ def sendReq(controller, debug=False):
 
     return resp
 
+
+controller, car = setup()
+
+debug = False
+if debug:
+    enableDebug(controller, car)
+else:
+    disableDebug(controller, car)
+
+# want to be able to catch keyboard interrupt exceptions so we can safely close serial ports
+try:
+    while True:
+        loop(controller, car, debug)
+        
+# when we want to end the program safely close the serial ports
+except KeyboardInterrupt:
+    # controller.close()
+    car.close()
+        
+tracker = get_tracker()
+
 while True:
-    sendReq()
+    sendReq(controller)

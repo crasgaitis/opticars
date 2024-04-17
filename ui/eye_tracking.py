@@ -16,6 +16,7 @@ def update_eye_tracking_data():
         # time.sleep(0.1)
         out = gaze_data(TRACKER, 1)
         eye_tracking_data = gaze_id(out)
+        # stream to bytes
 
 # Start a thread to continuously update eye tracking data
 if __name__ == '__main__':

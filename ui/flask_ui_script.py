@@ -13,7 +13,7 @@ def index():
 @socketio.on('get_eye_tracking_data')
 def get_eye_tracking_data():
     eye_tracking_data = eye_tracking.eye_tracking_data
-    print(eye_tracking_data)
+    # print(eye_tracking_data)
     socketio.emit('update_eye_tracking_data', {'data': eye_tracking_data})
 
 if __name__ == '__main__':

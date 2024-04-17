@@ -48,7 +48,7 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
         # print(data)
         dict_list.append(data)
         
-    print(data)
+    # print(data)
     
     tot_dict = combine_dicts_with_labels(dict_list)
     index = range(intervals)
