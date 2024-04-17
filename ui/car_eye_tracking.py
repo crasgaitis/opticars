@@ -2,16 +2,22 @@ import pandas as pd
 from utils import build_dataset, get_tracker, calculatePower
 
 
-def sendReq(controller):
-    data, _ = build_dataset(tracker, 'cat')
-    data2 = pd.DataFrame(data.iloc[0]).transpose()
-    mag, dir = calculatePower(data2)
-    # print(f"Mag: {mag}, Dir: {dir}")
+# def sendReq(controller):
+#     data, _ = build_dataset(tracker, 'cat')
+#     data2 = pd.DataFrame(data.iloc[0]).transpose()
+#     left, right = calculatePower(data2)
+#     # print(f"Mag: {mag}, Dir: {dir}")
 
 tracker = get_tracker()
 
 
-def sendReq(controller, req, debug=False):     
+def sendReq(controller, debug=False):   
+
+    data, _ = build_dataset(tracker, 'cat')
+    data2 = pd.DataFrame(data.iloc[0]).transpose()
+    left, right = calculatePower(data2)
+    req = f"req: {left}, {right}" # format request to controller
+
     # Send data request to the controller
     controller.write(req.encode())
     controller.flush() # make sure it all sends before you start reading
