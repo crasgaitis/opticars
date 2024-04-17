@@ -194,7 +194,21 @@ def build_dataset_from_csv(file_path, label):
     return df
 
 # calculatePower takes in 4 args (left and right eye coords) and returns left and right magnitude
-def calculatePower(left_x, left_y, right_x, right_y):
+# def calculatePower(left_x, left_y, right_x, right_y):
+#     leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
+#     rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
+
+#     if abs(leftMagnitude) > 1.0:
+#         leftMagnitude /= abs(leftMagnitude)
+
+#     if abs(rightMagnitude) > 1.0:
+#         rightMagnitude /= abs(rightMagnitude)
+        
+#     return leftMagnitude, rightMagnitude
+
+def calculatePower(dataframe):
+    left_x, left_y, right_x, right_y = parse_gaze_data(dataframe)
+
     leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
     rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
 
@@ -247,3 +261,28 @@ def get_tracker():
     # print(f"Can stream eye images: {tr.CAPABILITY_HAS_EYE_IMAGES in tracker.device_capabilities}")
     # print(f"Can stream gaze data: {tr.CAPABILITY_HAS_GAZE_DATA in tracker.device_capabilities}")
     return tracker
+
+def parse_gaze_data(dataframe):
+     # extract x and y coordinates from the specified column
+    left_x_values = [point[0] for point in dataframe['left_gaze_point_on_display_area']]
+    left_y_values = [point[1] for point in dataframe['left_gaze_point_on_display_area']]
+    right_x_values = [point[0] for point in dataframe['right_gaze_point_on_display_area']]
+    right_y_values = [point[1] for point in dataframe['right_gaze_point_on_display_area']]
+
+    left_x_values = [translate2ScreenX(x) for x in left_x_values]
+    left_y_values = [translate2ScreenY(y) for y in left_y_values]
+    right_x_values = [translate2ScreenX(x) for x in right_x_values]
+    right_y_values = [translate2ScreenY(y) for y in right_y_values]
+
+    # take the average of all left_x_values and left_y_values
+
+    left_x = mean(left_x_values)
+    left_y = mean(left_y_values)
+    right_x = mean(right_x_values)
+    right_y = mean(right_y_values)
+
+    return left_x, left_y, right_x, right_y
+
+# mean takes in a list and returns the mean of the list
+def mean(list):
+    return sum(list) / len(list)

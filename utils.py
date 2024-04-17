@@ -271,3 +271,4 @@ def parse_gaze_data(dataframe):
 # mean takes in a list and returns the mean of the list
 def mean(list):
     return sum(list) / len(list)
+

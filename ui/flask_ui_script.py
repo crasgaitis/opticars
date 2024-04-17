@@ -1,13 +1,10 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 import threading
-from utils_folder.utils import gaze_id, get_tracker, gaze_data
+import eye_tracking
 
 app = Flask(__name__)
-app.logger.disabled = True
 socketio = SocketIO(app, async_mode='eventlet')
-
-lock = threading.Lock()
 
 @app.route('/')
 def index():
@@ -15,25 +12,13 @@ def index():
 
 @socketio.on('get_eye_tracking_data')
 def get_eye_tracking_data():
-    while True:
-        lock.acquire()
-        
-        try:
-            TRACKER = get_tracker()
-            out = gaze_data(TRACKER, 1)
-            data = gaze_id(out)
-            
-            socketio.emit('update_eye_tracking_data', {'data': data})
-            print(data)
-        finally:
-            lock.release()
-    
-#     socketio.emit('update_eye_tracking_data', {'data': data})
+    eye_tracking_data = eye_tracking.eye_tracking_data
+    print(eye_tracking_data)
+    socketio.emit('update_eye_tracking_data', {'data': eye_tracking_data})
 
 if __name__ == '__main__':
-    
     # start the eye tracking script
-    threading.Thread(target=get_eye_tracking_data).start()
-    
+    threading.Thread(target=eye_tracking.update_eye_tracking_data).start()
+
     # start the Flask app
-    socketio.run(app, debug=True, port=4999)
+    socketio.run(app, debug=True, port=5001)
