@@ -35,7 +35,7 @@ def gaze_data(eyetracker, wait_time=5):
   return global_gaze_data
 
 def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(), 
-                  time_step_sec = 0.5, tot_time_min = 0.1):
+                  time_step_sec = 0, tot_time_min = 0.1):
     
     global global_gaze_data
     

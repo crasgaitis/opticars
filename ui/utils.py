@@ -106,28 +106,70 @@ def gaze_id(dataframe):
 
         # take the average of all left_x_values and left_y_values
 
+    # x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
+    # y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
+    
+    # print(f'tcoordinates {x}, {y}' )
+    
+    #Graham's tests
+    gx = (left_x_values[0] + right_x_values[0])/2
+    gy = (left_y_values[0] + right_y_values[0])/2
+    
+    
     x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
     y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
+    
+    print(f'coordinates {gx}, {gy}' )
+    print(f'tcoordinates {x}, {y}' )
+    
 
     element = "o"
-    if (x < -0.33 and y > 0.33):
+    
+    # if (gy > .35):
+    #     element += "1"
+    # elif (gy > -.25):
+    #     element += "4"
+    # elif (gy <= -.25):
+    #     element += "7"
+    
+    if (gx < -0.4 and gy > .35):
         element += "1"
-    elif (x > -0.33 and x < 0.33 and y > 0.33):
+    elif (gx < .2 and gy > .35):
         element += "2"
-    elif (x > 0.33 and y > 0.33):
+    elif (gx >= .2 and gy > .35):
         element += "3"
-    elif (x < -0.33 and y > -0.33 and y < 0.33):
+    elif (gx < -0.4 and gy > -.25):
         element += "4"
-    elif (x > -0.33 and x < 0.33 and y > -0.33 and y < 0.33):
-            element += "5"
-    elif (x > 0.33 and y > -0.33 and y < 0.33):
+    elif (gx < .2 and gy > -.25):
+        element += "5"
+    elif (gx >= .2 and gy > -.25):
         element += "6"
-    elif (x < -0.33 and y < -0.33):
+    elif (gx < -0.4 and gy <= -.25):
         element += "7"
-    elif (x > -0.33 and x < 0.33 and y < -0.33):
+    elif (gx < .2 and gy <= -.25):
         element += "8"
-    elif (x > 0.33 and y < -0.33):
+    elif (gx >= .2 and gy <= -.25):
         element += "9"
+    print(element)
+    
+    # if (x < -0.33 and y > 0.33):
+    #     element += "1"
+    # elif (x > -0.33 and x < 0.33 and y > 0.33):
+    #     element += "2"
+    # elif (x > 0.33 and y > 0.33):
+    #     element += "3"
+    # elif (x < -0.33 and y > -0.33 and y < 0.33):
+    #     element += "4"
+    # elif (x > -0.33 and x < 0.33 and y > -0.33 and y < 0.33):
+    #         element += "5"
+    # elif (x > 0.33 and y > -0.33 and y < 0.33):
+    #     element += "6"
+    # elif (x < -0.33 and y < -0.33):
+    #     element += "7"
+    # elif (x > -0.33 and x < 0.33 and y < -0.33):
+    #     element += "8"
+    # elif (x > 0.33 and y < -0.33):
+    #     element += "9"
 
     return element
      
@@ -223,19 +265,19 @@ def calculatePower(dataframe):
 # translate2ScreenX takes in a value and returns the translated x coordinate
 def translate2ScreenX(xcoord):
     output = 2*xcoord - 1
-    if output < -1:
-        return -1
-    elif output > 1:
-        return 1
+    # if output < -1:
+    #     return -1
+    # elif output > 1:
+    #     return 1
     return output
 
 # translate2ScreenY takes in a value and returns the translated y coordinate
 def translate2ScreenY(ycoord):
     output = 1 - 2*ycoord
-    if output < -1:
-        return -1
-    elif output > 1:
-        return 1
+    # if output < -1:
+    #     return -1
+    # elif output > 1:
+    #     return 1
     return output
 
 # gaze_detection takes in a dataframe and column name and returns x and y coordinates

@@ -18,7 +18,17 @@
 
 import serial
 import time
-from ui.utils import build_dataset, get_tracker, detect_movement_example_with_scaling
+import tobii_research as tr
+
+def get_tracker():
+  all_eyetrackers = tr.find_all_eyetrackers()
+
+  for tracker in all_eyetrackers:
+    # print("Model: " + tracker.model)
+    # print("Serial number: " + tracker.serial_number) 
+    # print(f"Can stream eye images: {tr.CAPABILITY_HAS_EYE_IMAGES in tracker.device_capabilities}")
+    # print(f"Can stream gaze data: {tr.CAPABILITY_HAS_GAZE_DATA in tracker.device_capabilities}")
+    return tracker
 
 
 ################################################
@@ -46,12 +56,12 @@ def setup():
 
 
     # set up serial port to communicate with the car over bluetooth
-    bluetoothPort = "/dev/cu.HC-06"
+    bluetoothPort = "COM10"
     carSerial = serial.Serial(bluetoothPort, baud)
     # give time to connect
     time.sleep(2)
 
-    # return controllerSerial, carSerial
+    # return eye tracker & serial port
     return tracker, carSerial
 
 '''
@@ -61,14 +71,18 @@ def setup():
     @param car Serial connection for car.
     @param debug Whether the controller and car are in debug mode or not. Defaults to False.
 '''
-def loop(controller, car, debug=False):
+def loop(eyeTracker, car, debug=False):
     # Will process messages one at a time and will require an RESP or ACK message from controller or car respectively
 
     # # Send get data request and get response from controller
     # req = "REQ:DATA\n"
     # resp = sendReq(controller, req, debug)
     
-    cmd = sendReq(controller)
+    # cmd = sendReq(controller)
+    data, _ = build_dataset(eyeTracker, 'cat')
+    data2 = pd.DataFrame(data.iloc[0]).transpose()
+    left, right = calculatePower(data2)
+    cmd = f"CMD: {left},{right}\n" # format request to controller
 
     # # create cmd message from this resp
     # cmd = createCmd(resp)
@@ -107,12 +121,12 @@ def sendReq(controller, req, debug=False):
 
     return resp
 
-def sendReq(controller):
-    data, dict_list = build_dataset(tracker, 'cat', time_step_sec=0.15, tot_time_min=0.0025)
-    data2 = pd.DataFrame(data.iloc[0]).transpose()
-    print(data)
-    mag, dir = detect_movement_example_with_scaling(data2)
-    print(f"Mag: {mag}, Dir: {dir}")
+# def sendReq(controller):
+#     data, dict_list = build_dataset(tracker, 'cat', time_step_sec=0.15, tot_time_min=0.0025)
+#     data2 = pd.DataFrame(data.iloc[0]).transpose()
+#     print(data)
+#     mag, dir = detect_movement_example_with_scaling(data2)
+#     print(f"Mag: {mag}, Dir: {dir}")
 
 '''
     @brief Sends the given command message to the car and returns its acknowledgement (if applicable)
@@ -214,18 +228,18 @@ def disableDebug(controller, car):
     @brief Main function for python. Will call setup() once and then repeat loop() forever.
 '''
 def main():
-    controller, car = setup()
+    eyeTracker, car = setup()
     
     debug = False
-    if debug:
-        enableDebug(controller, car)
-    else:
-        disableDebug(controller, car)
+    # if debug:
+    #     enableDebug(eyeTracker, car)
+    # else:
+    #     disableDebug(eyeTracker, car)
 
     # want to be able to catch keyboard interrupt exceptions so we can safely close serial ports
     try:
         while True:
-            loop(controller, car, debug)
+            loop(eyeTracker, car, debug)
             
     # when we want to end the program safely close the serial ports
     except KeyboardInterrupt:
