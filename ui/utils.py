@@ -4,6 +4,7 @@ import pandas as pd
 import math
 import ast
 import threading
+import numpy as np
 
 global_gaze_data = None
 lock = threading.Lock()
@@ -46,9 +47,13 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
         data = gaze_data(tracker, time_step_sec)
         # print(data)
         dict_list.append(data)
+        
+    # print(data)
     
     tot_dict = combine_dicts_with_labels(dict_list)
-    df = pd.DataFrame(tot_dict).T
+    index = range(intervals)
+
+    df = pd.DataFrame(tot_dict, index=index).T
     df['type'] = label
         
     if add_on:
@@ -60,43 +65,67 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
         return df, dict_list
     
 # gaze id takes in an x and y coordinate and returns the id that should be highlighted
-def gaze_id(dataframe):
-    # extract x and y coordinates from the specified column
-    print(dataframe)
-    left_x_values = [point[0] for point in dataframe['left_gaze_point_on_display_area']]
-    left_y_values = [point[1] for point in dataframe['left_gaze_point_on_display_area']]
-    right_x_values = [point[0] for point in dataframe['right_gaze_point_on_display_area']]
-    right_y_values = [point[1] for point in dataframe['right_gaze_point_on_display_area']]
+def preprocess_gaze(dataframe):
+    #if right eye is invalid, use left eye data
+    if dataframe['right_gaze_point_validity'] == 0:
+        left_gp = dataframe['left_gaze_point_on_display_area']
+        right_gp = dataframe['left_gaze_point_on_display_area']
+    #if left eye is invalid, use right eye data
+    elif dataframe['left_gaze_point_validity'] == 0:
+        left_gp = dataframe['right_gaze_point_on_display_area']
+        right_gp = dataframe['right_gaze_point_on_display_area']
+    # if both valid
+    elif (dataframe['left_gaze_point_validity'] == 1 and dataframe['right_gaze_point_validity'] == 1):
+        left_gp = dataframe['left_gaze_point_on_display_area']
+        right_gp = dataframe['right_gaze_point_on_display_area']
+    else:
+        print('ouch!')
+        return "o1" 
+        # returns now so it wont be overwritten later
 
+    # extract x and y coordinates from the specified column
+    left_x_values = [point[0] for point in [left_gp]]
+    left_y_values = [point[1] for point in [left_gp]]
+    right_x_values = [point[0] for point in [right_gp]]
+    right_y_values = [point[1] for point in [right_gp]]
+
+        # Translate the x and y coordinates
     left_x_values = [translate2ScreenX(x) for x in left_x_values]
     left_y_values = [translate2ScreenY(y) for y in left_y_values]
     right_x_values = [translate2ScreenX(x) for x in right_x_values]
     right_y_values = [translate2ScreenY(y) for y in right_y_values]
 
-    # take the average of all left_x_values and left_y_values
+    return left_x_values, left_y_values, right_x_values, right_y_values
 
-    x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
-    y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
 
+def gaze_id(gazexy):
+    
+    left_x_values, left_y_values, right_x_values, right_y_values = gazexy
+    
+    gx = (left_x_values[0] + right_x_values[0])/2
+    gy = (left_y_values[0] + right_y_values[0])/2 
+    
     element = "o"
-    if (x < -0.33 and y > 0.33):
+    
+    if (gx < -0.4 and gy > .35):
         element += "1"
-    elif (x > -0.33 and x < 0.33 and y > 0.33):
+    elif (gx < .2 and gy > .35):
         element += "2"
-    elif (x > 0.33 and y > 0.33):
+    elif (gx >= .2 and gy > .35):
         element += "3"
-    elif (x < -0.33 and y > -0.33 and y < 0.33):
+    elif (gx < -0.4 and gy > -.25):
         element += "4"
-    elif (x > -0.33 and x < 0.33 and y > -0.33 and y < 0.33):
+    elif (gx < .2 and gy > -.25):
         element += "5"
-    elif (x > 0.33 and y > -0.33 and y < 0.33):
+    elif (gx >= .2 and gy > -.25):
         element += "6"
-    elif (x < -0.33 and y < -0.33):
+    elif (gx < -0.4 and gy <= -.25):
         element += "7"
-    elif (x > -0.33 and x < 0.33 and y < -0.33):
+    elif (gx < .2 and gy <= -.25):
         element += "8"
-    elif (x > 0.33 and y < -0.33):
+    elif (gx >= .2 and gy <= -.25):
         element += "9"
+    # print(element)
 
     return element
      
@@ -122,6 +151,11 @@ def safe_tuple_eval(s, default_value=None):
         # Return default value if conversion fails
         return default_value
 
+def safe_tuple_eval_for_dict(s, default_value = None):
+    try:
+        return ast.literal_eval(s)
+    except (ValueError, SyntaxError):
+        return default_value
 
 def build_dataset_from_csv(file_path, label):
     '''
@@ -158,7 +192,53 @@ def build_dataset_from_csv(file_path, label):
     return df
 
 # calculatePower takes in 4 args (left and right eye coords) and returns left and right magnitude
-def calculatePower(left_x, left_y, right_x, right_y):
+# def calculatePower(left_x, left_y, right_x, right_y):
+#     leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
+#     rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
+
+#     if abs(leftMagnitude) > 1.0:
+#         leftMagnitude /= abs(leftMagnitude)
+
+#     if abs(rightMagnitude) > 1.0:
+#         rightMagnitude /= abs(rightMagnitude)
+        
+#     return leftMagnitude, rightMagnitude
+
+def rescale_item(item, min_value=-1.2, max_value = 1.2):
+    """Rescales each value within the item to 1 to -1, based on the specified min and max values. """
+    rescaled_item = []
+    for value in item:
+        if value < min_value:
+            value = min_value
+        elif value > max_value:
+            value = max_value
+        rescaled_value = 2 * (value - min_value) / (max_value - min_value) - 1
+        rescaled_item.append(rescaled_value)
+    return rescaled_item
+
+def calculatePower_new(gazexy):
+    
+    left_x, left_y, right_x, right_y = gazexy
+    
+    left_x, right_x = rescale_item((left_x[0], right_x[0]), -1.2, 1.2) 
+    left_y, right_y = rescale_item((left_y[0] * -1, right_y[0] * -1), -1.2, 1.2) 
+
+    leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
+    rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
+
+    if abs(leftMagnitude) > 1.0:
+        leftMagnitude /= abs(leftMagnitude)
+
+    if abs(rightMagnitude) > 1.0:
+        rightMagnitude /= abs(rightMagnitude)
+    
+    # leftMagnitude, rightMagnitude = rescale_item((leftMagnitude, rightMagnitude), -1, 1)  
+        
+    return np.round(leftMagnitude, 1), np.round(rightMagnitude, 1)
+
+def calculatePowerold(dataframe):
+    left_x, left_y, right_x, right_y = parse_gaze_data(dataframe)
+
     leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
     rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
 
@@ -173,19 +253,19 @@ def calculatePower(left_x, left_y, right_x, right_y):
 # translate2ScreenX takes in a value and returns the translated x coordinate
 def translate2ScreenX(xcoord):
     output = 2*xcoord - 1
-    if output < -1:
-        return -1
-    elif output > 1:
-        return 1
+    # if output < -1:
+    #     return -1
+    # elif output > 1:
+    #     return 1
     return output
 
 # translate2ScreenY takes in a value and returns the translated y coordinate
 def translate2ScreenY(ycoord):
     output = 1 - 2*ycoord
-    if output < -1:
-        return -1
-    elif output > 1:
-        return 1
+    # if output < -1:
+    #     return -1
+    # elif output > 1:
+    #     return 1
     return output
 
 # gaze_detection takes in a dataframe and column name and returns x and y coordinates
@@ -206,8 +286,33 @@ def get_tracker():
   all_eyetrackers = tr.find_all_eyetrackers()
 
   for tracker in all_eyetrackers:
-    print("Model: " + tracker.model)
-    print("Serial number: " + tracker.serial_number) 
-    print(f"Can stream eye images: {tr.CAPABILITY_HAS_EYE_IMAGES in tracker.device_capabilities}")
-    print(f"Can stream gaze data: {tr.CAPABILITY_HAS_GAZE_DATA in tracker.device_capabilities}")
+    # print("Model: " + tracker.model)
+    # print("Serial number: " + tracker.serial_number) 
+    # print(f"Can stream eye images: {tr.CAPABILITY_HAS_EYE_IMAGES in tracker.device_capabilities}")
+    # print(f"Can stream gaze data: {tr.CAPABILITY_HAS_GAZE_DATA in tracker.device_capabilities}")
     return tracker
+
+def parse_gaze_data(dataframe):
+     # extract x and y coordinates from the specified column
+    left_x_values = [point[0] for point in dataframe['left_gaze_point_on_display_area']]
+    left_y_values = [point[1] for point in dataframe['left_gaze_point_on_display_area']]
+    right_x_values = [point[0] for point in dataframe['right_gaze_point_on_display_area']]
+    right_y_values = [point[1] for point in dataframe['right_gaze_point_on_display_area']]
+
+    left_x_values = [translate2ScreenX(x) for x in left_x_values]
+    left_y_values = [translate2ScreenY(y) for y in left_y_values]
+    right_x_values = [translate2ScreenX(x) for x in right_x_values]
+    right_y_values = [translate2ScreenY(y) for y in right_y_values]
+
+    # take the average of all left_x_values and left_y_values
+
+    left_x = mean(left_x_values)
+    left_y = mean(left_y_values)
+    right_x = mean(right_x_values)
+    right_y = mean(right_y_values)
+
+    return left_x, left_y, right_x, right_y
+
+# mean takes in a list and returns the mean of the list
+def mean(list):
+    return sum(list) / len(list)

@@ -8,8 +8,7 @@
 
 .main {
     width: auto;
-    height: auto;
-    background-color: blueviolet;
+    height: 100%;
 }
 
 .flex-container {
@@ -34,7 +33,7 @@
 
 #c2 {
 
-    /* padding-bottom: 180px; */
+    padding-bottom: 25px;
     margin-bottom: 10px;
 
 
@@ -66,9 +65,17 @@ h1 {
 #o4, #o6 {
     margin: 0;
     width: 250px;
+    height: 400px;
+    padding-top: 80px;
 }
 
-
+iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
 
 
 

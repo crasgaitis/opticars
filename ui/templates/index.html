@@ -5,10 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eye Tracking App</title>
     <link rel="stylesheet" href="/static/css/style.css" />
-    <script src="main.js"></script>
 </head>
 <body>
-    <h1 id="eyeTrackingData">Eye Tracking Data: </h1>
+    <!-- <h1 id="eyeTrackingData">Eye Tracking Data: </h1> -->
+    <!-- https://www.youtube.com/embed/3jWRrafhO7M?si=bLJzCGBnmifUbO_d-->
+    <!-- https://youtube.com/live/sQpCpXPAKHs?feature=share -->
+    <!-- https://youtube.com/live/idnMCrc9L5M?feature=share -->
+    <!-- https://youtube.com/live/qpMDF4rQ6NU?feature=share -->
+
+    <iframe width="100%" height="100%" src="https://youtube.com/embed/qpMDF4rQ6NU?feature=share?autoplay=1&vq=small" frameborder="0" allowfullscreen allow="autoplay"></iframe>
+    <!-- <iframe width="100%" height="100%" src="https://meet.google.com/jqm-mwvn-mdt" frameborder="0" allowfullscreen allow="autoplay"></iframe> -->
+
+
+    <div class="main " id="main">
+        <div class="flex-container" id="c1">
+            <div class="oval" id="o1"></div>
+            <div class="oval" id="o2"></div>
+            <div class="oval" id="o3"></div>
+    
+    
+        </div>
+    
+        <div class="flex-container" id="c2">
+            
+            <div class="oval" id="o4"></div>
+            <!-- <h1 id="dz">dead zone</h1> -->
+    
+            <!-- <div class="oval" id="o5">
+                <h1>Dead Zone</h1>
+            </div> -->
+            <div class="oval" id="o6"></div>
+        </div>
+    
+        <div class="flex-container" id="c3">
+            <div class="oval" id="o7"></div>
+            <div class="oval" id="o8">
+                <!-- <h1>Rear View</h1> -->
+            </div>
+            <div class="oval" id="o9"></div>
+        </div>
+    </div>  
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
     <script>
@@ -16,18 +53,19 @@
 
         // get updates from the server
         socket.on('update_eye_tracking_data', function(data) {
-            document.getElementById('eyeTrackingData').innerText = 'Eye Tracking Data: ' + data.data;
+            // document.getElementById('eyeTrackingData').innerText = 'Eye Tracking Data: ' + data.data;
+            console.log('got it');
+            // document.getElementById('eyeTrackingData').innerText = 'Eye Tracking Data: ' + data.data;
+            var objectId = data.data; // objectId is the return from the gaze_id function
+            console.log(objectId);
+            update(objectId);        
+        
         });
 
         // request updates from the server
         setInterval(function() {
             socket.emit('get_eye_tracking_data');
-
-            var objectId = gaze_id(data); // objectId is the return from the gaze_id function
-            update(objectId);
         }, 100);
-
-        
 
         function update(objectId) { // gets objectId from gaze_id() in utils.py
             resetBackgroundColor();
@@ -37,6 +75,7 @@
         function updateBackgroundColorById(objectId, newColor) {
             // Get the element with the specified ID
             var element = document.getElementById(objectId);
+            // console.log(element);
 
             // Check if the element exists
             if (element) {
@@ -49,67 +88,11 @@
 
 
         function resetBackgroundColor() {
-            var element = document.getElementsByClassName("oval");
-            element.style.backgroundColor = "red";
-        }  
-
-
+            var elements = document.getElementsByClassName("oval");
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.backgroundColor = "red";
+            }
+        }
     </script>
-    
-    <container class="main" id="main">
-        <container class="flex-container" id="c1">
-            <div class="oval" id="o1"></div>
-            <div class="oval" id="o2"></div>
-            <div class="oval" id="o3"></div>
-    
-    
-        </container>
-    
-        <container class="flex-container" id="c2">
-            
-            <div class="oval" id="o4"></div>
-            <!-- <h1 id="dz">dead zone</h1> -->
-    
-            <!-- <div class="oval" id="o5">
-                <h1>Dead Zone</h1>
-            </div> -->
-            <div class="oval" id="o6"></div>
-        </container>
-    
-        <container class="flex-container" id="c3">
-            <div class="oval" id="o7"></div>
-            <div class="oval" id="o8">
-                <!-- <h1>Rear View</h1> -->
-            </div>
-            <div class="oval" id="o9"></div>
-        </container>
-    </container>  
-
-    <script>
-
-        // document.getElementById("o1").onmouseover = function() {updateBackgroundColorById('o1', 'green')};
-        // document.getElementById("o1").onmouseout = function() {updateBackgroundColorById('o1', 'red')};
-
-        // document.getElementById("o2").onmouseover = function() {updateBackgroundColorById('o2', 'green')};
-        // document.getElementById("o2").onmouseout = function() {updateBackgroundColorById('o2', 'red')};
-
-        // document.getElementById("o3").onmouseover = function() {updateBackgroundColorById('o3', 'green')};
-        // document.getElementById("o3").onmouseout = function() {updateBackgroundColorById('o3', 'red')};
-
-        // document.getElementById("o4").onmouseover = function() {updateBackgroundColorById('o4', 'green')};
-        // document.getElementById("o4").onmouseout = function() {updateBackgroundColorById('o4', 'red')};
-
-        // document.getElementById("o6").onmouseover = function() {updateBackgroundColorById('o6', 'green')};
-        // document.getElementById("o6").onmouseout = function() {updateBackgroundColorById('o6', 'red')};
-
-        // document.getElementById("o7").onmouseover = function() {updateBackgroundColorById('o7', 'green')};
-        // document.getElementById("o7").onmouseout = function() {updateBackgroundColorById('o7', 'red')};
-
-
-        // document.getElementById("o9").onmouseover = function() {updateBackgroundColorById('o9', 'green')};
-        // document.getElementById("o9").onmouseout = function() {updateBackgroundColorById('o9', 'red')};
-
-    </script>
-
 </body>
 </html>
