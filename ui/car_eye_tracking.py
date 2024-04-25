@@ -1,5 +1,5 @@
 import pandas as pd
-from utils import build_dataset, get_tracker, calculatePower
+from utils import build_dataset, get_tracker
 import time, serial
 
 # divide numbers by 10 and make sure they're floats (-1.0, 1.1)
@@ -37,8 +37,8 @@ try:
 
         # Send cmd message to the car
         # Right now we don't really need to handle the ack message but in the future could support better error handling
-        # car.write(cmd.encode())
-        # car.flush() # make sure it all sends before you start reading
+        car.write(cmd.encode())
+        car.flush() # make sure it all sends before you start reading
         print("Sent: " + cmd)
         
 # when we want to end the program safely close the serial ports

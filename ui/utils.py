@@ -4,7 +4,7 @@ import pandas as pd
 import math
 import ast
 import threading
-
+import numpy as np
 
 global_gaze_data = None
 lock = threading.Lock()
@@ -65,16 +65,7 @@ def build_dataset(tracker, label, add_on = False, df_orig = pd.DataFrame(),
         return df, dict_list
     
 # gaze id takes in an x and y coordinate and returns the id that should be highlighted
-def gaze_id(dataframe):
-    
-    # if both left and right gaze points are invalid, return "o1"
-    # if any(dataframe[key] == 0 for key in ['left_gaze_point_validity', 'right_gaze_point_validity']):
-    #     print('ouch!')
-    #     element = "o1"
-
-        
-    # else:
-    print('valid data!')
+def preprocess_gaze(dataframe):
     #if right eye is invalid, use left eye data
     if dataframe['right_gaze_point_validity'] == 0:
         left_gp = dataframe['left_gaze_point_on_display_area']
@@ -104,33 +95,17 @@ def gaze_id(dataframe):
     right_x_values = [translate2ScreenX(x) for x in right_x_values]
     right_y_values = [translate2ScreenY(y) for y in right_y_values]
 
-        # take the average of all left_x_values and left_y_values
+    return left_x_values, left_y_values, right_x_values, right_y_values
 
-    # x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
-    # y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
+
+def gaze_id(gazexy):
     
-    # print(f'tcoordinates {x}, {y}' )
+    left_x_values, left_y_values, right_x_values, right_y_values = gazexy
     
-    #Graham's tests
     gx = (left_x_values[0] + right_x_values[0])/2
-    gy = (left_y_values[0] + right_y_values[0])/2
+    gy = (left_y_values[0] + right_y_values[0])/2 
     
-    
-    x = (translate2ScreenX(left_x_values[0]) + translate2ScreenX(right_x_values[0])) / 2
-    y = (translate2ScreenY(left_y_values[0]) + translate2ScreenY(right_y_values[0])) / 2
-    
-    print(f'coordinates {gx}, {gy}' )
-    print(f'tcoordinates {x}, {y}' )
-    
-
     element = "o"
-    
-    # if (gy > .35):
-    #     element += "1"
-    # elif (gy > -.25):
-    #     element += "4"
-    # elif (gy <= -.25):
-    #     element += "7"
     
     if (gx < -0.4 and gy > .35):
         element += "1"
@@ -150,26 +125,7 @@ def gaze_id(dataframe):
         element += "8"
     elif (gx >= .2 and gy <= -.25):
         element += "9"
-    print(element)
-    
-    # if (x < -0.33 and y > 0.33):
-    #     element += "1"
-    # elif (x > -0.33 and x < 0.33 and y > 0.33):
-    #     element += "2"
-    # elif (x > 0.33 and y > 0.33):
-    #     element += "3"
-    # elif (x < -0.33 and y > -0.33 and y < 0.33):
-    #     element += "4"
-    # elif (x > -0.33 and x < 0.33 and y > -0.33 and y < 0.33):
-    #         element += "5"
-    # elif (x > 0.33 and y > -0.33 and y < 0.33):
-    #     element += "6"
-    # elif (x < -0.33 and y < -0.33):
-    #     element += "7"
-    # elif (x > -0.33 and x < 0.33 and y < -0.33):
-    #     element += "8"
-    # elif (x > 0.33 and y < -0.33):
-    #     element += "9"
+    # print(element)
 
     return element
      
@@ -248,7 +204,39 @@ def build_dataset_from_csv(file_path, label):
         
 #     return leftMagnitude, rightMagnitude
 
-def calculatePower(dataframe):
+def rescale_item(item, min_value=-1.2, max_value = 1.2):
+    """Rescales each value within the item to 1 to -1, based on the specified min and max values. """
+    rescaled_item = []
+    for value in item:
+        if value < min_value:
+            value = min_value
+        elif value > max_value:
+            value = max_value
+        rescaled_value = 2 * (value - min_value) / (max_value - min_value) - 1
+        rescaled_item.append(rescaled_value)
+    return rescaled_item
+
+def calculatePower_new(gazexy):
+    
+    left_x, left_y, right_x, right_y = gazexy
+    
+    left_x, right_x = rescale_item((left_x[0], right_x[0]), -1.2, 1.2) 
+    left_y, right_y = rescale_item((left_y[0] * -1, right_y[0] * -1), -1.2, 1.2) 
+
+    leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
+    rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
+
+    if abs(leftMagnitude) > 1.0:
+        leftMagnitude /= abs(leftMagnitude)
+
+    if abs(rightMagnitude) > 1.0:
+        rightMagnitude /= abs(rightMagnitude)
+    
+    # leftMagnitude, rightMagnitude = rescale_item((leftMagnitude, rightMagnitude), -1, 1)  
+        
+    return np.round(leftMagnitude, 1), np.round(rightMagnitude, 1)
+
+def calculatePowerold(dataframe):
     left_x, left_y, right_x, right_y = parse_gaze_data(dataframe)
 
     leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
