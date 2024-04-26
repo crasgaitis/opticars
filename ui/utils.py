@@ -25,13 +25,11 @@ def gaze_data_callback(gaze_data):
 def gaze_data(eyetracker, wait_time=5):
   global global_gaze_data
   
-  with lock:
-    eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
+  eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
 
   time.sleep(wait_time)
   
-  with lock:
-    eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
+  eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
 
   return global_gaze_data
 
