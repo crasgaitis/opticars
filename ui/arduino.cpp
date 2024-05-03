@@ -26,17 +26,31 @@
 // BLUETOOTH SETUP
 ////////////////////////////////////////////////
 
-// int RxD = 2;
-// int TxD = 3;
+int RxD = 2;
+int TxD = 3;
 
-int RxD = 0;
-int TxD = 1;
+// int RxD = 0;
+// int TxD = 1;
+// SoftwareSerial BTSerial(RxD, TxD);
+
+// void setup() {
+//   pinMode(RxD, INPUT);
+//   pinMode(TxD, OUTPUT);
+//   BTSerial.begin(9600); // Added semicolon here
+//   Serial.begin(9600);   // Added semicolon here
+// }
+
+// void loop() {
+//   Serial.println(BTSerial.available());
+// }
 
 SoftwareSerial HC06(RxD,TxD);
 
-////////////////////////////////////////////////
-// DEBUG VARIABLES
-////////////////////////////////////////////////
+
+
+// ////////////////////////////////////////////////
+// // DEBUG VARIABLES
+// ////////////////////////////////////////////////
 
 bool DEBUG = true;
 
@@ -63,10 +77,10 @@ QueueHandle_t updateQueue = NULL;
 // CAR MANAGER VARIABLES
 ////////////////////////////////////////////////
 
-#define IN1 7
-#define IN2 6
-#define IN3 5
-#define IN4 4
+#define IN1 6
+#define IN2 7
+#define IN3 4
+#define IN4 5
 #define ENA 9
 #define ENB 3
 

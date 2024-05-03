@@ -25,13 +25,11 @@ def gaze_data_callback(gaze_data):
 def gaze_data(eyetracker, wait_time=5):
   global global_gaze_data
   
-  with lock:
-    eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
+  eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
 
   time.sleep(wait_time)
   
-  with lock:
-    eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
+  eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
 
   return global_gaze_data
 
@@ -89,11 +87,14 @@ def preprocess_gaze(dataframe):
     right_x_values = [point[0] for point in [right_gp]]
     right_y_values = [point[1] for point in [right_gp]]
 
-        # Translate the x and y coordinates
+    # Translate the x and y coordinates
     left_x_values = [translate2ScreenX(x) for x in left_x_values]
     left_y_values = [translate2ScreenY(y) for y in left_y_values]
     right_x_values = [translate2ScreenX(x) for x in right_x_values]
     right_y_values = [translate2ScreenY(y) for y in right_y_values]
+    
+    # print(np.round(left_x_values[0], 1))
+    # print(np.round(left_y_values[0], 1))
 
     return left_x_values, left_y_values, right_x_values, right_y_values
 
@@ -104,6 +105,11 @@ def gaze_id(gazexy):
     
     gx = (left_x_values[0] + right_x_values[0])/2
     gy = (left_y_values[0] + right_y_values[0])/2 
+    
+    if gx > 2:
+        gx = 2
+    if gy > 2:
+        gy = 2
     
     element = "o"
     
@@ -220,17 +226,55 @@ def calculatePower_new(gazexy):
     
     left_x, left_y, right_x, right_y = gazexy
     
-    left_x, right_x = rescale_item((left_x[0], right_x[0]), -1.2, 1.2) 
-    left_y, right_y = rescale_item((left_y[0] * -1, right_y[0] * -1), -1.2, 1.2) 
+    # left_x, right_x = rescale_item((left_x[0], right_x[0]), -1.2, 1.2) 
+    # left_y, right_y = rescale_item((left_y[0] * -1, right_y[0] * -1), -1.2, 1.2) 
 
     leftMagnitude = (left_y + right_y)/2 + (left_x + right_x)/2
     rightMagnitude = (left_y + right_y)/2 - (left_x + right_x)/2
 
-    if abs(leftMagnitude) > 1.0:
+    if abs(leftMagnitude) > 2.0:
         leftMagnitude /= abs(leftMagnitude)
 
-    if abs(rightMagnitude) > 1.0:
+    if abs(rightMagnitude) > 2.0:
         rightMagnitude /= abs(rightMagnitude)
+        
+def calculatePower_new2(gazexy):
+    left_x, left_y, right_x, right_y = gazexy
+    
+    gx = (left_x[0] + right_x[0])/2
+    gy = (left_y[0] + right_y[0])/2
+        
+    if (gx < -0.4 and gy > .35):
+        left = 1.2
+        right = 2
+    elif (gx < .2 and gy > .35):
+        left = 2
+        right = 2
+    elif (gx >= .2 and gy > .35):
+        left = 2
+        right = 1.2
+    elif (gx < -0.4 and gy > -.25):
+        left = 1
+        right = 2
+    elif (gx < .2 and gy > -.25):
+        left = 1
+        right = 1
+    elif (gx >= .2 and gy > -.25):
+        left = 2
+        right = 1
+    elif (gx < -0.4 and gy <= -.25):
+        left = 1.2
+        right = 0.2
+    elif (gx < .2 and gy <= -.25):
+        left = 0
+        right = 0
+    elif (gx >= .2 and gy <= -.25):
+        left = 0.2
+        right = 1.2
+    
+    return left, right
+
+        
     
     # leftMagnitude, rightMagnitude = rescale_item((leftMagnitude, rightMagnitude), -1, 1)  
         

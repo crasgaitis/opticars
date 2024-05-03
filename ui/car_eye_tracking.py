@@ -12,12 +12,12 @@ baud = 9600
 # controllerSerial = serial.Serial(controllerPort, baud)
 # # give time to connect
 # time.sleep(2)
-tracker = get_tracker()
+#tracker = get_tracker()
 
 
 # set up serial port to communicate with the car over bluetooth
 # bluetoothPort = "COM5"
-bluetoothPort = "COM5"
+bluetoothPort = "COM3"
 car = serial.Serial(bluetoothPort, baud)
 # give time to connect
 time.sleep(2)
@@ -40,6 +40,7 @@ try:
         car.write(cmd.encode())
         car.flush() # make sure it all sends before you start reading
         print("Sent: " + cmd)
+        time.sleep(1)
         
 # when we want to end the program safely close the serial ports
 except KeyboardInterrupt:
