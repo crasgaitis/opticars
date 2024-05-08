@@ -17,16 +17,7 @@ def gaze_data_callback(out):
     
     # # stream to bytes
     left, right = calculatePower_new2(gazexy)
-    # left +=1
-    # right +=1
-    # right += (0.2) * (2/3)
-    # if right >= 2:
-    #     right = 2
-    #     right = np.round(right, 1)      
-    # cmd = f"CMD: {round(((left)), 2)},{round((right), 2)}\n" # format request to controller
-    # print(cmd)
-    # left = -2.0
-    # right = -2.0
+
     cmd = f"CMD: {round(((left)), 2)},{round((right), 2)}\n" # format request to controller
     print(cmd)
 

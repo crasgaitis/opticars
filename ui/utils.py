@@ -246,28 +246,28 @@ def calculatePower_new2(gazexy):
         
     if (gx < -0.4 and gy > .35):
         left = 1.2
-        right = 2
+        right = 2.0
     elif (gx < .2 and gy > .35):
-        left = 2
-        right = 2
+        left = 2.0
+        right = 2.0
     elif (gx >= .2 and gy > .35):
-        left = 2
+        left = 2.0
         right = 1.2
     elif (gx < -0.4 and gy > -.25):
-        left = 1
-        right = 2
+        left = 1.0
+        right = 2.0
     elif (gx < .2 and gy > -.25):
-        left = 1
-        right = 1
+        left = 1.0
+        right = 1.0
     elif (gx >= .2 and gy > -.25):
-        left = 2
-        right = 1
+        left = 2.0
+        right = 1.0
     elif (gx < -0.4 and gy <= -.25):
         left = 1.2
         right = 0.2
     elif (gx < .2 and gy <= -.25):
-        left = 0
-        right = 0
+        left = 0.0
+        right = 0.0
     elif (gx >= .2 and gy <= -.25):
         left = 0.2
         right = 1.2
