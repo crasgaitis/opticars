@@ -1,35 +1,8 @@
-# opticars
+# Opticars: Innovating Mobility with Eye-Controlled Vehicles
+Individuals with limited motor abilities often face challenges accessing technology independently, as well as in physical mobility. Opticars introduces a novel, hands-free solution that utilizes eye tracking technology to maneuver an Arduino car. Our project features a custom-built vehicle, a carefully designed user interface, and an original data preprocessing and streaming pipeline.
+
 Team: 
 
-Software: Catherine Rasgaitis, Yuna Kim, Ruslana Korolov, Evan Wu, Zohar Le, Sasha Batoukova, Graham Cobden, AnnMarie Vo, Lam Pham
+Software: Catherine Rasgaitis, Ruslana Korolov, Evan Wu, Graham Cobden
 
-Hardware: Peyton Rapo, Joanna Zhou, Nick Garwood, Daniel Zheng, Lincoln Mansbach
-
-TODOs:
-
-Note: Must be running Eye Manager for build function to work!
-
-Software:
-- build up UI
-    - use Cat's template:
-    - eye_tracking.py just auto generates fake data right now
-    - flask_ui_script.py is what you'll run to start the Flask app
-    - the UI itself should be built on index.html in the templates folder, add css in templates/static/css
-
-    - add rectangle blobs
-    - use sample data to test on UI
-
-    - ruslana > in charge of front end
-    - evan > working on sending voltage data for wheels
-    - annmarie, ruslana > figma
-    - yuna, annmarie > fix build 
-    - zohar, lam > collect sample data
-
-- build functions for different eye movement detection
-- connect javascript car movements to python eye movement detection
-
-- lit review on AVs
-
-Hardware:
-- purchase car parts
-- CAD for eye tracker holder -> 3D print
+Hardware: Peyton Rapo, Joanna Zhou, Daniel Zheng, Lincoln Mansbach
