@@ -297,7 +297,7 @@ def calculatePower_new3(gazexy):
     left_y, right_y = rescale_item_2((left_y[0] * -1, right_y[0] * -1), -1.2, 1.2) # -1.2
 
     x = (left_x + right_x) / 2
-    y = 0.9 * (left_y + right_y) / 2
+    y = (left_y + right_y) / 2 # 0.9 * 
     
     R = 1 - abs(y - 1) # the radius of the imaginary circle
 

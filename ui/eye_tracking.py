@@ -21,17 +21,17 @@ def gaze_data_callback(out):
     left, right = calculatePower_new3(gazexy)  # try
 
     # print(f"{left}, {right}")
-    cmd = f"CMD: {round(((left)), 2)},{round((right), 2)}\n" # format request to controller
+    cmd = f"CMD: {round(((left)), 1)},{round((right), 1)}\n" # format request to controller
     # cmd=f"CMD: 0.1, 1.9"
     # print(cmd)
 
     car.write(cmd.encode())
     car.flush() # make sure it all sends before you start reading
     print(cmd)
+    time.sleep(0.1)
     
 def update_eye_tracking_data():
     global car
-
     baud = 9600
     bluetoothPort = "COM14"
     car = serial.Serial(bluetoothPort, baud)
@@ -42,9 +42,9 @@ def update_eye_tracking_data():
 
     try:
         while True:
-            time.sleep(0.5)
+            time.sleep(1)
     except KeyboardInterrupt:
-        print("ouch")
+        # print("ouch")
         TRACKER.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
 
         car.close() 

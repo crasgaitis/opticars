@@ -77,12 +77,13 @@ QueueHandle_t updateQueue = NULL;
 // CAR MANAGER VARIABLES
 ////////////////////////////////////////////////
 
-#define IN1 6
-#define IN2 7
-#define IN3 4
-#define IN4 5
-#define ENA 9
-#define ENB 3
+#define IN1 4
+#define IN2 5
+#define IN3 6
+#define IN4 7
+#define ENA 3
+#define ENB 9
+
 
 // Definition of a movement order
 struct movementOrder {
@@ -94,7 +95,7 @@ struct movementOrder {
 // This is in ticks which I think are 1 ms, so this is a timeout of 100 ms.
 // The CommunicationManager tries to read a message every 10 ms
 // so this means it'd have to fail 10 times in a row to trigger this.
-#define TIMEOUT 20
+#define TIMEOUT 100
 
 ////////////////////////////////////////////////
 // ARDUINO SETUP & LOOP
@@ -105,10 +106,10 @@ struct movementOrder {
  * 
  * REFERENCES: Used Blink_AnalogRead FreeRTOS example as the starter code for this method
  */
+
 void setup() {
   // Want this to occur before anything else, and not multithreaded.
   // Start bluetooth serial on baud rate of 9600. Can be interfaced with only by the python server over bluetooth
-  
   // Use serial for debugging
   if (DEBUG) {
     Serial.begin(9600);
@@ -258,6 +259,11 @@ void TaskCarManager(void *pvParameters)
     float xVal = currOrder.xVal; // -x is turn left and +x is turn right
     float yVal = currOrder.yVal; // -y is reverse and +y is forward
 
+    // Serial.println(xVal);
+    // Serial.println(yVal);
+    // Serial.println();
+
+    // TESTING LOL
     leftControl(xVal);
     rightControl(yVal);
   }
@@ -298,6 +304,9 @@ void processMoveOrder(String cmd) {
   xVal = cmd.substring(5, 8).toFloat() - 1.0;
   yVal = cmd.substring(9, 12).toFloat() - 1.0;
 
+  // xVal = -2.0;
+  // yVal = -2.0;
+
   // Create movement order
   movementOrder order = {xVal, yVal};
 
@@ -337,18 +346,28 @@ void leftControl(float x) {
     digitalWrite(IN4, LOW); 
   }
   int mag = (int) (255.0 * abs(x));
+   if (mag > 255) {
+     mag = 255;
+   }
+  //  Serial.println(x);
   analogWrite(ENA, mag);
 }
 
 void rightControl(float y) {
   if (y > 0) {
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW); 
-  } else {
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, HIGH); 
+  } else {
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW); 
   }
   int mag = (int) (255.0 * abs(y));
+   if (mag > 255) {
+     mag = 255;
+   }
+  Serial.println(y);
+  // Serial.println(mag);
+  // Serial.println("hello");
   analogWrite(ENB, mag);
 }
 
@@ -362,7 +381,7 @@ void rightControl(float y) {
  */
 void debug(String msg) {
   // If using car connected comment this out since you don't want it to be sending data backwards
-  // if (DEBUG) {
-  //   Serial.println(msg);
-  // } 
+  if (DEBUG) {
+    Serial.println(msg);
+  } 
 }
