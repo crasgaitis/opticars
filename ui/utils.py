@@ -84,8 +84,12 @@ def preprocess_gaze(dataframe):
     # extract x and y coordinates from the specified column
     left_x_values = [point[0] for point in [left_gp]]
     left_y_values = [point[1] for point in [left_gp]]
+    
     right_x_values = [point[0] for point in [right_gp]]
     right_y_values = [point[1] for point in [right_gp]]
+    
+    # print(f'{left_x_values}, {left_y_values}')
+    # print()
 
     # Translate the x and y coordinates
     left_x_values = [translate2ScreenX(x) for x in left_x_values]
@@ -222,6 +226,18 @@ def rescale_item(item, min_value=-1.2, max_value = 1.2):
         rescaled_item.append(rescaled_value)
     return rescaled_item
 
+def rescale_item_2(item, min_value=-1.2, max_value=1.2):
+    """Rescales each value within the item to 0 to 2, based on the specified min and max values."""
+    rescaled_item = []
+    for value in item:
+        if value < min_value:
+            value = min_value
+        elif value > max_value:
+            value = max_value
+        rescaled_value = 2 * ((value - min_value) / (max_value - min_value))
+        rescaled_item.append(rescaled_value)
+    return rescaled_item
+
 def calculatePower_new(gazexy):
     
     left_x, left_y, right_x, right_y = gazexy
@@ -246,39 +262,53 @@ def calculatePower_new2(gazexy):
         
     if (gx < -0.4 and gy > .35):
         left = 1.2
-        right = 2
+        right = 2.0
     elif (gx < .2 and gy > .35):
-        left = 2
-        right = 2
+        left = 2.0
+        right = 2.0
     elif (gx >= .2 and gy > .35):
-        left = 2
+        left = 2.0
         right = 1.2
     elif (gx < -0.4 and gy > -.25):
-        left = 1
-        right = 2
+        left = 1.0
+        right = 2.0
     elif (gx < .2 and gy > -.25):
-        left = 1
-        right = 1
+        left = 1.0
+        right = 1.0
     elif (gx >= .2 and gy > -.25):
-        left = 2
-        right = 1
+        left = 2.0
+        right = 1.0
     elif (gx < -0.4 and gy <= -.25):
         left = 1.2
         right = 0.2
     elif (gx < .2 and gy <= -.25):
-        left = 0
-        right = 0
+        left = 0.0
+        right = 0.0
     elif (gx >= .2 and gy <= -.25):
         left = 0.2
         right = 1.2
     
     return left, right
 
-        
+def calculatePower_new3(gazexy):
+    left_x, left_y, right_x, right_y = gazexy
+    
+    left_x, right_x = rescale_item((left_x[0], right_x[0]), -1.2, 1.2) 
+    left_y, right_y = rescale_item_2((left_y[0] * -1, right_y[0] * -1), -1.2, 1.2) # -1.2
+
+    x = (left_x + right_x) / 2
+    y = (left_y + right_y) / 2 # 0.9 * 
+    
+    R = 1 - abs(y - 1) # the radius of the imaginary circle
+
+    left = y + R * np.sin(x * np.pi / 2) # the speed of left motor
+    right = y - R * np.sin(x * np.pi / 2) # the speed of right motor
+    
+    return left, right
     
     # leftMagnitude, rightMagnitude = rescale_item((leftMagnitude, rightMagnitude), -1, 1)  
         
-    return np.round(leftMagnitude, 1), np.round(rightMagnitude, 1)
+    # return np.round(leftMagnitude, 1), np.round(rightMagnitude, 1)
 
 def calculatePowerold(dataframe):
     left_x, left_y, right_x, right_y = parse_gaze_data(dataframe)
