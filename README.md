@@ -20,6 +20,8 @@
   </tr>
 </table>
 
+<img src="https://github.com/user-attachments/assets/593f6939-738c-41a5-a94a-09b5dbbe1a4d" alt="image" width="600" /> <br/>
+
 
 Made with 💙 by your favorite scientists, engineers, & programmers at Synaptech
 
